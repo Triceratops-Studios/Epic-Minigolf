@@ -9,18 +9,18 @@
 			"",
 			"\toverride OnDestroy(): void {}",
 			"}",
-			""
+			"",
 		],
-		"description": "Creates an AirshipBehaviour class."
+		"description": "Creates an AirshipBehaviour class.",
 	},
-    "ComponentBin": {
+	"ComponentBin": {
 		"prefix": "componentbin",
 		"body": [
-            "import { Bin } from \"@Easy/Core/Shared/Util/Bin\";",
-            "",
+			"import { Bin } from \"@Easy/Core/Shared/Util/Bin\";",
+			"",
 			"export default class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}/g} extends AirshipBehaviour {",
-            "\tprivate bin = new Bin();",
-            "",
+			"\tprivate bin = new Bin();",
+			"",
 			"\toverride OnEnable(): void {",
 			"\t\t${0}",
 			"\t}",
@@ -28,9 +28,9 @@
 			"\toverride OnDisable(): void {",
 			"\t\tthis.bin.Clean()",
 			"\t}",
-            "}",
-			""
+			"}",
+			"",
 		],
-		"description": "Creates an AirshipBehaviour class with a bin that is cleaned on OnDisable."
-	}
+		"description": "Creates an AirshipBehaviour class with a bin that is cleaned on OnDisable.",
+	},
 }

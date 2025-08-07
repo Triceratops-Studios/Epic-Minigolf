@@ -50,9 +50,7 @@
     {
       "name": "Airship",
       "url": "https://registry.npmjs.org",
-      "scopes": [
-        "gg.easy"
-      ]
+      "scopes": ["gg.easy"]
     }
   ]
 }
