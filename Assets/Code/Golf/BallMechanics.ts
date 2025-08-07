@@ -43,29 +43,26 @@ export default class BallMechanics extends AirshipBehaviour {
 	}
 
 	OnTriggerEnter(collider: Collider): void {
-    if (!Game.IsClient()) return;
+    	if (!Game.IsClient()) return;
 
-    const currentVelocity = this.character?.movement.GetVelocity();
-    if (!currentVelocity || currentVelocity.magnitude < 0.1) return;
+    	const currentVelocity = this.character?.movement.GetVelocity();
+    	if (!currentVelocity || currentVelocity.magnitude < 0.1) return;
 
-    const origin = this.position;
+    	const origin = this.position;
 
-    const direction = currentVelocity.normalized;
-    const ray = new Ray(origin, direction);
-    const hitInfo = collider.Raycast(ray, 2);
+    	const direction = currentVelocity.normalized;
+    	const ray = new Ray(origin, direction);
+    	const hitInfo = collider.Raycast(ray, 2);
 
-    if (hitInfo) {
-        const normal = hitInfo.normal;
+    	if (hitInfo) {
+        	const normal = hitInfo.normal;
 
-        if (Vector3.Dot(direction, normal) < 0) {
-            const reflected = Vector3.Reflect(currentVelocity, normal);
-            this.character?.movement.SetVelocity(reflected.mul(0.8));
-        }
-    }
-}
-
-
-
+        	if (Vector3.Dot(direction, normal) < 0) {
+            	const reflected = Vector3.Reflect(currentVelocity, normal);
+            	this.character?.movement.SetVelocity(reflected.mul(0.8));
+        	}
+    	}
+	}
 
 	override Start(): void {
 		if (Game.IsClient()) {
