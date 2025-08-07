@@ -18,9 +18,9 @@ export default class BallMechanics extends AirshipBehaviour {
 	private position: Vector3;
 
 	public static counter = 0;
-	public declare strengthBar: GameObject;
-	public declare shootingIndicator: GameObject;
-	public declare baseStrength: number;
+	declare public strengthBar: GameObject;
+	declare public shootingIndicator: GameObject;
+	declare public baseStrength: number;
 
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
@@ -33,39 +33,33 @@ export default class BallMechanics extends AirshipBehaviour {
 			} else {
 				const velocity = this.character?.movement.GetVelocity();
 				if (velocity.magnitude >= 0.01) {
-    				const lookRotation = Quaternion.LookRotation(velocity);
-    				const euler = lookRotation.eulerAngles;
-    				object.transform.rotation = Quaternion.Euler(euler.x + 90, euler.y, euler.z);
-					return euler
+					const lookRotation = Quaternion.LookRotation(velocity);
+					const euler = lookRotation.eulerAngles;
+					object.transform.rotation = Quaternion.Euler(euler.x + 90, euler.y, euler.z);
+					return euler;
 				}
 			}
 		}
 	}
 
-	OnTriggerEnter(collider: Collider): void {
-    if (!Game.IsClient()) return;
+	OnCollisionEnter(collision: Collision): void {
+		if (!Game.IsClient()) {
+			return;
+		}
+		const contact = collision.contacts[0];
+		const normal = contact.normal;
+		const currentVelocity = this.character?.movement.GetVelocity();
 
-    const currentVelocity = this.character?.movement.GetVelocity();
-    if (!currentVelocity || currentVelocity.magnitude < 0.1) return;
-
-    const origin = this.position;
-
-    const direction = currentVelocity.normalized;
-    const ray = new Ray(origin, direction);
-    const hitInfo = collider.Raycast(ray, 2);
-
-    if (hitInfo) {
-        const normal = hitInfo.normal;
-
-        if (Vector3.Dot(direction, normal) < 0) {
-            const reflected = Vector3.Reflect(currentVelocity, normal);
-            this.character?.movement.SetVelocity(reflected.mul(0.8));
-        }
-    }
-}
-
-
-
+		if (currentVelocity && currentVelocity.magnitude > 0.1 && Vector3.Dot(currentVelocity.normalized, normal) < 0) {
+			const reflected = Vector3.Reflect(currentVelocity, normal);
+			task.defer(() => {
+				this.character?.movement.SetVelocity(reflected.mul(currentVelocity.magnitude));
+				this.character!.transform.GetComponent<Rigidbody>().linearVelocity = reflected.mul(
+					currentVelocity.magnitude,
+				);
+			});
+		}
+	}
 
 	override Start(): void {
 		if (Game.IsClient()) {
@@ -119,9 +113,9 @@ export default class BallMechanics extends AirshipBehaviour {
 							.add(new Vector3(0, 2 * this.strength, 0));
 						const rb = this.character.transform.GetComponent<Rigidbody>();
 						rb.AddForce(force, ForceMode.Impulse);
-						const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
-						movement.accelerationForce = 2 * this.strength
-						BallMechanics.counter += 1
+						const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+						movement.accelerationForce = 2 * this.strength;
+						BallMechanics.counter += 1;
 						this.cooldown = true;
 					}
 				}
@@ -164,10 +158,12 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 		} else if (this.cooldown && this.pointer) {
-			const rotation = this.updateLocation(this.pointer, 2)
-		
-			if (this.updating) { return }
-			this.updating = true
+			const rotation = this.updateLocation(this.pointer, 2);
+
+			if (this.updating) {
+				return;
+			}
+			this.updating = true;
 			const circle = this.pointer.transform.Find("Circle");
 			if (circle) {
 				const graphic = circle.GetComponent<Image>();
