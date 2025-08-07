@@ -4,42 +4,68 @@ import { ControlScheme, Mouse, Preferred, Touchscreen } from "@Easy/Core/Shared/
 import { Game } from "@Easy/Core/Shared/Game";
 import { ActionInputType } from "@Easy/Core/Shared/Input/InputUtil";
 
-import ColorPallette from "./ColorPallette";
+import ColorPallette from "Minigolf/Settings/ColorPallette";
 
 export default class BallMechanics extends AirshipBehaviour {
 	private strength = 0;
 	private change = 1;
 	private active = false;
 	private cooldown = false;
+	private updating = false;
 	private instance: GameObject;
 	private pointer: GameObject;
 	private character: Character | undefined;
+	private position: Vector3;
 
+	public static counter = 0;
 	public declare strengthBar: GameObject;
 	public declare shootingIndicator: GameObject;
 	public declare baseStrength: number;
 
 	private color = ColorPallette.random();
+	private updateLocation(object: GameObject, rotation: number | undefined) {
+		object.transform.position = this.position;
+		if (rotation && this.character) {
+			if (rotation === 1) {
+				const lookVec = this.character.movement.GetLookVector();
+				const angleY = math.atan2(lookVec.x, lookVec.z) * (180 / math.pi);
+				object.transform.rotation = Quaternion.Euler(90, angleY, 0);
+			}
+			else {
+				const velocity = this.character?.movement.GetVelocity();
+				if (velocity.magnitude >= 0.01) {
+    				const lookRotation = Quaternion.LookRotation(velocity);
+    				const euler = lookRotation.eulerAngles;
+    				object.transform.rotation = Quaternion.Euler(90, euler.y, 0);
+				}
+			}
+		}
+	}
 
 	override Start(): void {
 		if (Game.IsClient()) {
 			this.character = Game.localPlayer.character;
 			const camera = Airship.Camera.cameraRig?.mainCamera;
 
+			if (this.character?.gameObject !== this.gameObject) {
+				Destroy(this)
+			}
+
 			Mouse.onLeftDown.Connect(() => {
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
 				const speed = this.character?.movement.GetVelocity();
-				if (Mouse.isLeftDown && !this.active && this.character && !this.cooldown) {
+				if (Mouse.isLeftDown && !this.active && this.character && !this.cooldown && speed && speed.magnitude <= 0.1) {
 					this.character?.movement.SetVelocity(Vector3.zero);
+					const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
+					movement.accelerationForce = 0
 
 					this.active = true;
 					this.instance = Instantiate(this.strengthBar);
-					const position = this.character.transform.position;
-					this.instance.transform.position = position;
+					this.updateLocation(this.instance, undefined)
 
 					this.pointer = Instantiate(this.shootingIndicator);
-					this.pointer.transform.position = position;
+					this.updateLocation(this.pointer, 1)
 
 					const graphics = this.pointer.GetComponentsInChildren<Image>(true);
 					for (const graphic of graphics) {
@@ -54,9 +80,12 @@ export default class BallMechanics extends AirshipBehaviour {
 						let forward = this.character.movement.GetLookVector();
 						forward = new Vector3(forward.x, 0, forward.z).normalized;
 						const force = forward
-							.mul(this.baseStrength * (this.strength + 0.07))
-							.add(new Vector3(0, 5 * this.strength, 0));
+							.mul(this.baseStrength * math.pow(this.strength * 2, 2) / 4 * 3 + this.baseStrength * this.strength)
+							.add(new Vector3(0, 2 * this.strength, 0));
 						this.character.movement.AddImpulse(force);
+						const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
+						movement.accelerationForce = 2 * this.strength
+						BallMechanics.counter += 1
 						this.cooldown = true;
 					}
 				}
@@ -68,15 +97,14 @@ export default class BallMechanics extends AirshipBehaviour {
 	}
 
 	protected override Update(dt: number): void {
+
 		if (!(Game.IsClient() && this.character)) {
 			return;
 		}
+		this.position = this.character.transform.position;
+
 		if (this.active) {
-			const lookVec = this.character.movement.GetLookVector();
-			const angleY = math.atan2(lookVec.x, lookVec.z) * (180 / math.pi);
-			if (this.pointer) {
-				this.pointer.transform.rotation = Quaternion.Euler(90, angleY, 0);
-			}
+			this.updateLocation(this.pointer, 1)
 
 			this.strength += this.change * dt;
 			this.strength = math.clamp(this.strength, 0, 1);
@@ -89,29 +117,40 @@ export default class BallMechanics extends AirshipBehaviour {
 			const bar = background?.transform.Find("Strength");
 			if (bar) {
 				bar.transform.localScale = new Vector3(1, this.strength, 1);
-				// const shake = background.GetComponent<EasyShake>
-				// if (shake) {
-				// 	shake.maxPositionOffset = Vector3.one.mul(0.08 * this.strength)
-				// 	shake.maxRotationOffsetAngles = Vector3.one.mul(12 * this.strength)
-				// }
-			}
-		} else if (this.cooldown && this.pointer && this.character) {
-			this.pointer.transform.position = this.character.transform.position;
+				const image = bar.transform.GetComponent<Image>();
+				image.color = ColorPallette.lerp3(this.strength, 3, 2, 0)
 
+				const shake = background.GetComponent<EasyShake>()
+				if (shake) {
+					const mult = math.max(0, this.strength - 0.4)
+					shake.maxPositionOffset = Vector3.one.mul(0.08 * mult)
+					shake.maxRotationOffsetAngles = Vector3.one.mul(25 * mult)
+					shake.movementsPerSecond = 100 * mult
+				}
+			}
+		} else if (this.cooldown && this.pointer) {
+			this.updateLocation(this.pointer, 2)
+
+			if (this.updating) { return }
+			this.updating = true
 			const circle = this.pointer.transform.Find("Circle");
 			if (circle) {
 				const graphic = circle.GetComponent<Image>();
-				if (graphic) {
+				if (graphic && !(graphic.color.a === 0)) {
 					graphic.color = new Color(1, 1, 1, 0);
+					task.wait(0.1);
 				}
-				task.wait(0.1);
 			}
-
+			
 			const speed = this.character.movement.GetVelocity();
 			if (speed.magnitude <= 0.1) {
 				this.cooldown = false;
 				Destroy(this.pointer);
+				const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
+				movement.accelerationForce = 0
 			}
+			this.updating = false
+
 		} else if (!this.cooldown) {
 		}
 	}
