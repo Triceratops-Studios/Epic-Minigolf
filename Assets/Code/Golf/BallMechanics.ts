@@ -16,7 +16,9 @@ export default class BallMechanics extends AirshipBehaviour {
 	private pointer: GameObject;
 	private character: Character | undefined;
 	private position: Vector3;
+	private oldPosition: Vector3;
 
+	public static isEnabled = true;
 	public static counter = 0;
 	public declare strengthBar: GameObject;
 	public declare shootingIndicator: GameObject;
@@ -42,26 +44,18 @@ export default class BallMechanics extends AirshipBehaviour {
 		}
 	}
 
+	FlipMovement(speed: Vector3, normal: Vector3, mult: number): void {
+		const reflected = Vector3.Reflect(speed, normal);
+		this.character?.movement.SetVelocity(reflected.mul(mult));
+	}
+
 	OnTriggerEnter(collider: Collider): void {
-    	if (!Game.IsClient()) return;
+    	if (!Game.IsClient() || collider.name === "HOLE" || !this.character) return
 
-    	const currentVelocity = this.character?.movement.GetVelocity();
-    	if (!currentVelocity || currentVelocity.magnitude < 0.1) return;
-
-    	const origin = this.position;
-
-    	const direction = currentVelocity.normalized;
-    	const ray = new Ray(origin, direction);
-    	const hitInfo = collider.Raycast(ray, 2);
-
-    	if (hitInfo) {
-        	const normal = hitInfo.normal;
-
-        	if (Vector3.Dot(direction, normal) < 0) {
-            	const reflected = Vector3.Reflect(currentVelocity, normal);
-            	this.character?.movement.SetVelocity(reflected.mul(0.8));
-        	}
-    	}
+		this.character.transform.position = this.oldPosition;
+		this.character.movement.SetVelocity(Vector3.zero);
+		const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+		movement.accelerationForce = 0;
 	}
 
 	override Start(): void {
@@ -83,11 +77,14 @@ export default class BallMechanics extends AirshipBehaviour {
 					this.character &&
 					!this.cooldown &&
 					speed &&
-					speed.magnitude <= 0.1
+					speed.magnitude <= 0.1 &&
+					BallMechanics.isEnabled
 				) {
 					this.character?.movement.SetVelocity(Vector3.zero);
 					const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
 					movement.accelerationForce = 0;
+
+					this.oldPosition = this.position;
 
 					this.active = true;
 					this.instance = Instantiate(this.strengthBar);
@@ -113,11 +110,12 @@ export default class BallMechanics extends AirshipBehaviour {
 								((this.baseStrength * math.pow(this.strength * 2, 2)) / 4) * 3 +
 									this.baseStrength * this.strength,
 							)
+							.mul(0.2 * this.strength + 1)
 							.add(new Vector3(0, 2 * this.strength, 0));
 						const rb = this.character.transform.GetComponent<Rigidbody>();
 						rb.AddForce(force, ForceMode.Impulse);
 						const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
-						movement.accelerationForce = 2 * this.strength
+						movement.accelerationForce = 1.5 * this.strength
 						BallMechanics.counter += 1
 						this.cooldown = true;
 					}
@@ -161,8 +159,8 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 		} else if (this.cooldown && this.pointer) {
-			const rotation = this.updateLocation(this.pointer, 2)
-		
+			const rotation = this.updateLocation(this.pointer, 2);
+	
 			if (this.updating) { return }
 			this.updating = true
 			const circle = this.pointer.transform.Find("Circle");
@@ -173,14 +171,33 @@ export default class BallMechanics extends AirshipBehaviour {
 					task.wait(0.1);
 				}
 			}
-
 			const speed = this.character.movement.GetVelocity();
-			if (speed.magnitude <= 0.1) {
+
+			if (speed.magnitude <= 0.15) {
 				this.cooldown = false;
 				Destroy(this.pointer);
 				const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
 				movement.accelerationForce = 0;
+			} else {
+				const rayOrigin = this.position.add(new Vector3(0, 0, 0));
+				const rayDirection = speed.normalized;
+				const mask = LayerMask.GetMask("Default");
+
+				const [hit, point, normal, collider] = Physics.Raycast(rayOrigin, rayDirection, 0.7 + speed.magnitude / 75, mask);
+
+				if (hit && normal) {
+					const upDot = Vector3.Dot(normal, new Vector3(0, 1, 0));
+					const isWall = upDot < 0.1;
+					print(upDot, collider.name, (isWall && Vector3.Dot(rayDirection, normal)))
+
+					if (isWall && Vector3.Dot(rayDirection, normal) < 0) {
+						
+						const reflected = Vector3.Reflect(speed, normal);
+						this.character.movement.SetVelocity(reflected.mul(0.9));
+					}
+				}
 			}
+			print("wowzers")
 			this.updating = false;
 		} else if (!this.cooldown) {
 		}

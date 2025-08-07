@@ -118,6 +118,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 861218341440746112, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: script
+      value: 
+      objectReference: {fileID: -4873009094604461776, guid: 6c6c9c1634f476c449b05061f9255cb6, type: 3}
+    - target: {fileID: 861218341440746112, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: metadata.properties.Array.data[2].serializedValue
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3569249470052007930, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -372,7 +380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: accelerationForce
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: gravityMultiplier
@@ -477,7 +485,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8616685848737228372, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5505410739956237650}
+      addedObject: {fileID: 6346439202225550479}
     - targetCorrespondingSourceObject: {fileID: 3994489106181738915, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6598630701711593634}
@@ -487,7 +495,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8616685848737228372, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
   m_PrefabInstance: {fileID: 7927222419360415486}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5505410739956237650
+--- !u!114 &6346439202225550479
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -499,7 +507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4feffba88dce746a2607f0ec6233b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  guid: 13b9cef6-18d2-4dde-83dc-082bb586cb9b
+  guid: 0925c167-07a2-47f5-b1e9-5f6400ef42ad
   script: {fileID: -4873009094604461776, guid: 6c6c9c1634f476c449b05061f9255cb6, type: 3}
   scriptPath: Assets/Code/Golf/BallMechanics.lua
   forceContext: 0
@@ -526,24 +534,6 @@ MonoBehaviour:
       serializedValue: 
       serializedObject: {fileID: 2518669800580996977, guid: 67a3185890d205c4aad1d64fb03b6bc2, type: 3}
       modified: 1
-    - name: baseStrength
-      type: number
-      objectType: 
-      items:
-        type: 
-        objectType: 
-        serializedItems: []
-        objectRefs: []
-      refPath: 
-      fileRef: 
-      jsDocs:
-        text: []
-        tags: []
-      decorators: []
-      nullable: 0
-      serializedValue: 40
-      serializedObject: {fileID: 0}
-      modified: 1
     - name: shootingIndicator
       type: object
       objectType: GameObject
@@ -561,6 +551,24 @@ MonoBehaviour:
       nullable: 0
       serializedValue: 
       serializedObject: {fileID: 992949206338722684, guid: 581b168cd8811ad4997ffb07ad99f3b4, type: 3}
+      modified: 1
+    - name: baseStrength
+      type: number
+      objectType: 
+      items:
+        type: 
+        objectType: 
+        serializedItems: []
+        objectRefs: []
+      refPath: 
+      fileRef: 
+      jsDocs:
+        text: []
+        tags: []
+      decorators: []
+      nullable: 0
+      serializedValue: 50
+      serializedObject: {fileID: 0}
       modified: 1
     displayIcon: {fileID: 0}
     displayName: 
@@ -591,7 +599,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 1
