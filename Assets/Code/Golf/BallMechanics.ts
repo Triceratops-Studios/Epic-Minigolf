@@ -36,11 +36,38 @@ export default class BallMechanics extends AirshipBehaviour {
 				if (velocity.magnitude >= 0.01) {
     				const lookRotation = Quaternion.LookRotation(velocity);
     				const euler = lookRotation.eulerAngles;
-    				object.transform.rotation = Quaternion.Euler(90, euler.y, 0);
+    				object.transform.rotation = Quaternion.Euler(euler.x + 90, euler.y, euler.z);
+					return euler
 				}
 			}
 		}
 	}
+
+	OnTriggerEnter(collider: Collider): void {
+    if (!Game.IsClient()) return;
+
+    const currentVelocity = this.character?.movement.GetVelocity();
+    if (!currentVelocity || currentVelocity.magnitude < 0.1) return;
+
+    const origin = this.position;
+
+    const direction = currentVelocity.normalized;
+    const ray = new Ray(origin, direction);
+    const hitInfo = collider.Raycast(ray, 2);
+
+    if (hitInfo) {
+        const normal = hitInfo.normal;
+		print("works?")
+
+        if (Vector3.Dot(direction, normal) < 0) {
+            const reflected = Vector3.Reflect(currentVelocity, normal);
+            this.character?.movement.SetVelocity(reflected.mul(0.8));
+        }
+    }
+}
+
+
+
 
 	override Start(): void {
 		if (Game.IsClient()) {
@@ -82,7 +109,8 @@ export default class BallMechanics extends AirshipBehaviour {
 						const force = forward
 							.mul(this.baseStrength * math.pow(this.strength * 2, 2) / 4 * 3 + this.baseStrength * this.strength)
 							.add(new Vector3(0, 2 * this.strength, 0));
-						this.character.movement.AddImpulse(force);
+						const rb = this.character.transform.GetComponent<Rigidbody>();
+						rb.AddForce(force, ForceMode.Impulse);
 						const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
 						movement.accelerationForce = 2 * this.strength
 						BallMechanics.counter += 1
@@ -129,8 +157,8 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 		} else if (this.cooldown && this.pointer) {
-			this.updateLocation(this.pointer, 2)
-
+			const rotation = this.updateLocation(this.pointer, 2)
+		
 			if (this.updating) { return }
 			this.updating = true
 			const circle = this.pointer.transform.Find("Circle");

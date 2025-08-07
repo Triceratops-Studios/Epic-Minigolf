@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2328288707098840552}
   - component: {fileID: 6312942521845359734}
   - component: {fileID: 7741338970827965199}
-  - component: {fileID: 7287924433402093294}
+  - component: {fileID: 5254688626131880250}
   m_Layer: 3
   m_Name: Head
   m_TagString: Untagged
@@ -87,14 +87,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7287924433402093294
-SphereCollider:
+--- !u!136 &5254688626131880250
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3744104482218978718}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 160d101a02c657f47b6905e440ea7370, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -105,8 +105,10 @@ SphereCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 2
   m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &7927222419360415486
 PrefabInstance:
@@ -123,6 +125,14 @@ PrefabInstance:
     - target: {fileID: 5043041770756594627, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: meshCombiner
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5519949438957097557, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5519949438957097557, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: m_AngularDrag
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5887290797789770780, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: m_LocalScale.y
@@ -329,7 +339,15 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: autoCrouch
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: slopeForce
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
@@ -349,8 +367,16 @@ PrefabInstance:
       value: 0.175
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: allowDebugFlying
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: accelerationForce
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: gravityMultiplier
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7270479773071441371, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: onlySprintForward
@@ -372,6 +398,14 @@ PrefabInstance:
       propertyPath: preventFallingWhileCrouching
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7877576865563315073, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7877576865563315073, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+      propertyPath: mainCollider
+      value: 
+      objectReference: {fileID: 6884776436780892420}
     - target: {fileID: 8440015110078338219, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
       propertyPath: _assetId
       value: 3212478205
@@ -528,24 +562,6 @@ MonoBehaviour:
       serializedValue: 
       serializedObject: {fileID: 992949206338722684, guid: 581b168cd8811ad4997ffb07ad99f3b4, type: 3}
       modified: 1
-    - name: counter
-      type: number
-      objectType: 
-      items:
-        type: 
-        objectType: 
-        serializedItems: []
-        objectRefs: []
-      refPath: 
-      fileRef: 
-      jsDocs:
-        text: []
-        tags: []
-      decorators: []
-      nullable: 0
-      serializedValue: 0
-      serializedObject: {fileID: 0}
-      modified: 0
     displayIcon: {fileID: 0}
     displayName: 
 --- !u!4 &3780381780464521886 stripped
@@ -565,7 +581,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6443631166122372957}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 160d101a02c657f47b6905e440ea7370, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -581,3 +597,8 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &6884776436780892420 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 3569249470052007930, guid: 4bfcf38072e582e42b941b472d5f3dcb, type: 3}
+  m_PrefabInstance: {fileID: 7927222419360415486}
+  m_PrefabAsset: {fileID: 0}
