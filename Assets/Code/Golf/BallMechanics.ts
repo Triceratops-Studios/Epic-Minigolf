@@ -20,9 +20,9 @@ export default class BallMechanics extends AirshipBehaviour {
 
 	public static isEnabled = true;
 	public static counter = 0;
-	public declare strengthBar: GameObject;
-	public declare shootingIndicator: GameObject;
-	public declare baseStrength: number;
+	declare public strengthBar: GameObject;
+	declare public shootingIndicator: GameObject;
+	declare public baseStrength: number;
 
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
@@ -35,10 +35,10 @@ export default class BallMechanics extends AirshipBehaviour {
 			} else {
 				const velocity = this.character?.movement.GetVelocity();
 				if (velocity.magnitude >= 0.01) {
-    				const lookRotation = Quaternion.LookRotation(velocity);
-    				const euler = lookRotation.eulerAngles;
-    				object.transform.rotation = Quaternion.Euler(euler.x + 90, euler.y, euler.z);
-					return euler
+					const lookRotation = Quaternion.LookRotation(velocity);
+					const euler = lookRotation.eulerAngles;
+					object.transform.rotation = Quaternion.Euler(euler.x + 90, euler.y, euler.z);
+					return euler;
 				}
 			}
 		}
@@ -114,9 +114,9 @@ export default class BallMechanics extends AirshipBehaviour {
 							.add(new Vector3(0, 2 * this.strength, 0));
 						const rb = this.character.transform.GetComponent<Rigidbody>();
 						rb.AddForce(force, ForceMode.Impulse);
-						const movement = this.character.movement.GetComponent<CharacterMovementSettings>()
-						movement.accelerationForce = 1.5 * this.strength
-						BallMechanics.counter += 1
+						const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+						movement.accelerationForce = 1.5 * this.strength;
+						BallMechanics.counter += 1;
 						this.cooldown = true;
 					}
 				}
@@ -160,9 +160,11 @@ export default class BallMechanics extends AirshipBehaviour {
 			}
 		} else if (this.cooldown && this.pointer) {
 			const rotation = this.updateLocation(this.pointer, 2);
-	
-			if (this.updating) { return }
-			this.updating = true
+
+			if (this.updating) {
+				return;
+			}
+			this.updating = true;
 			const circle = this.pointer.transform.Find("Circle");
 			if (circle) {
 				const graphic = circle.GetComponent<Image>();
