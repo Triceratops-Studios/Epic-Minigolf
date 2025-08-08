@@ -66,7 +66,7 @@ export default class BallMechanics extends AirshipBehaviour {
 					this.rb &&
 					!this.cooldown &&
 					speed &&
-					speed.magnitude <= 0.1 &&
+					speed.sqrMagnitude <= 0.1 &&
 					BallMechanics.isEnabled
 				) {
 					this.rb.linearVelocity = Vector3.zero;
@@ -97,6 +97,7 @@ export default class BallMechanics extends AirshipBehaviour {
 									this.baseStrength * this.strength,
 							)
 							.mul(0.2 * this.strength + 1)
+							.mul(this.rb.mass)
 							.add(new Vector3(0, 2 * this.strength, 0));
 						this.rb.AddForce(force, ForceMode.Impulse);
 						BallMechanics.counter += 1;
@@ -161,28 +162,10 @@ export default class BallMechanics extends AirshipBehaviour {
 					task.wait(0.1);
 				}
 			}
-
-			if (this.lastVelocity.magnitude <= 0.15) {
+			if (this.rb.linearVelocity.sqrMagnitude <= 0.15) {
+				this.rb.linearVelocity = Vector3.zero;
 				this.cooldown = false;
 				Destroy(this.pointer);
-			} else {
-				// const rayOrigin = this.position.add(new Vector3(0, 0, 0));
-				// const rayDirection = speed.normalized;
-				// const mask = LayerMask.GetMask("Default");
-
-				// const [hit, point, normal, collider] = Physics.Raycast(rayOrigin, rayDirection, 0.7 + speed.magnitude / 75, mask);
-
-				// if (hit && normal) {
-				// 	const upDot = Vector3.Dot(normal, new Vector3(0, 1, 0));
-				// 	const isWall = upDot < 0.1;
-				// 	print(upDot, collider.name, (isWall && Vector3.Dot(rayDirection, normal)))
-
-				// 	if (isWall && Vector3.Dot(rayDirection, normal) < 0) {
-						
-				// 		const reflected = Vector3.Reflect(speed, normal);
-				// 		this.character.movement.SetVelocity(reflected.mul(0.9));
-				// 	}
-				// }
 			}
 			this.updating = false;
 		} else if (!this.cooldown) {
