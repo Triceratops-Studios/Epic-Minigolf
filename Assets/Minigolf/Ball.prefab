@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -8040751296358459590}
   m_Layer: 0
   m_Name: Ball
-  m_TagString: Untagged
+  m_TagString: Character
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -185,24 +185,6 @@ MonoBehaviour:
       decorators: []
       nullable: 0
       serializedValue: 16
-      serializedObject: {fileID: 0}
-      modified: 1
-    - name: holeText
-      type: object
-      objectType: TMP_Text
-      items:
-        type: 
-        objectType: 
-        serializedItems: []
-        objectRefs: []
-      refPath: 
-      fileRef: 
-      jsDocs:
-        text: []
-        tags: []
-      decorators: []
-      nullable: 0
-      serializedValue: 
       serializedObject: {fileID: 0}
       modified: 1
     displayIcon: {fileID: 0}

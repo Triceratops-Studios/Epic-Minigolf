@@ -8,16 +8,18 @@ import BallMechanics from "./BallMechanics";
 export default class HoleMechanics extends AirshipBehaviour {
 	OnTriggerEnter(collider: Collider): void {
 		if (!Game.IsClient()) return;
-		BallMechanics.isEnabled = false;
+		GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.isEnabled = false;
 		task.wait(1);
-		BallMechanics.counter = 0;
-		BallMechanics.holeText.text = tostring(BallMechanics.counter);
+		GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.counter = 0;
+		GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.holeText.text = tostring(
+			GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.counter,
+		);
 		const character = Game.localPlayer;
 		print("YOU MADE IT?");
 
 		if (collider.gameObject.name === `Character_${Game.localPlayer.username}`) {
 			Airship.Damage.InflictDamage(collider.gameObject, 1000, undefined, {});
 		}
-		BallMechanics.isEnabled = true;
+		GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.isEnabled = true;
 	}
 }
