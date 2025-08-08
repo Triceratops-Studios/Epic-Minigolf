@@ -199,7 +199,6 @@ export default class BallMechanics extends AirshipBehaviour {
 					}
 				}
 			}
-			print("wowzers")
 			this.updating = false;
 		} else if (!this.cooldown) {
 		}
