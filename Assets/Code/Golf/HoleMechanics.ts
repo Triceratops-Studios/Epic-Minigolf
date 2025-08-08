@@ -10,6 +10,8 @@ export default class HoleMechanics extends AirshipBehaviour {
 		if (!Game.IsClient()) return;
 		BallMechanics.isEnabled = false;
 		task.wait(1);
+		BallMechanics.counter = 0;
+		BallMechanics.holeText.text = tostring(BallMechanics.counter);
 		const character = Game.localPlayer;
 		print("YOU MADE IT?");
 
