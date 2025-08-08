@@ -14,7 +14,10 @@ export default class HoleMechanics extends AirshipBehaviour {
 		print("YOU MADE IT?");
 		const player = Game.localPlayer;
 		const character = player.character;
-		if (!character) {print("sorry"); return;}
+		if (!character) {
+			print("sorry"); 
+			return;
+		}
 		
 		if (collider.gameObject.name === character.name) {
 			print("YOU MADE IT!")
