@@ -187,6 +187,24 @@ MonoBehaviour:
       serializedValue: 3.88
       serializedObject: {fileID: 0}
       modified: 1
+    - name: bounceMultiplier
+      type: number
+      objectType: 
+      items:
+        type: 
+        objectType: 
+        serializedItems: []
+        objectRefs: []
+      refPath: 
+      fileRef: 
+      jsDocs:
+        text: []
+        tags: []
+      decorators: []
+      nullable: 0
+      serializedValue: 0.5
+      serializedObject: {fileID: 0}
+      modified: 1
     displayIcon: {fileID: 0}
     displayName: 
 --- !u!54 &6050932576988482396

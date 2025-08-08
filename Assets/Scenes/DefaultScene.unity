@@ -183,14 +183,25 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5978122697672137440, guid: c279df25501755540b53d47834227d7b, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
       propertyPath: m_Name
       value: end (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1729849382}
   m_SourcePrefab: {fileID: 100100000, guid: c279df25501755540b53d47834227d7b, type: 3}
 --- !u!1 &95468205 stripped
 GameObject:
@@ -460,6 +471,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: ramp-high (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 099e2997dd7c7aa4f8e0b16e01d213bc, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7482095554734918674, guid: 099e2997dd7c7aa4f8e0b16e01d213bc, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -531,7 +550,7 @@ MonoBehaviour:
             is also assigned in the Resources/NetworkPrefabCollection.asset"'
       nullable: 0
       serializedValue: 
-      serializedObject: {fileID: 1844145888036083882, guid: 3ffb4c78387652a4fa521f3b09a03ae9, type: 3}
+      serializedObject: {fileID: 8421102427360197587, guid: 3ffb4c78387652a4fa521f3b09a03ae9, type: 3}
       modified: 1
     - name: enableJumping
       type: boolean
@@ -1336,9 +1355,17 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5358656399128814618, guid: a27cccf44e5ad7f4faa07f624b96795c, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a27cccf44e5ad7f4faa07f624b96795c, type: 3}
       propertyPath: m_Name
       value: obstacle-block
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a27cccf44e5ad7f4faa07f624b96795c, type: 3}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1412,9 +1439,17 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5978122697672137440, guid: c279df25501755540b53d47834227d7b, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
       propertyPath: m_Name
       value: end (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1822,9 +1857,17 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -2402126065504390598, guid: 675542ac61bbbf1478bd3773cf77382b, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 675542ac61bbbf1478bd3773cf77382b, type: 3}
       propertyPath: m_Name
       value: straight
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 675542ac61bbbf1478bd3773cf77382b, type: 3}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1952,6 +1995,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: skew-corner (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5d24ac0d5289ebe448bb19a89fb86e2f, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 6983802494645903251, guid: 5d24ac0d5289ebe448bb19a89fb86e2f, type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1960,6 +2011,33 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1748450310}
   m_SourcePrefab: {fileID: 100100000, guid: 5d24ac0d5289ebe448bb19a89fb86e2f, type: 3}
+--- !u!1 &1729849380 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+  m_PrefabInstance: {fileID: 76174808}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1729849382
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729849380}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8254804224689600507, guid: c279df25501755540b53d47834227d7b, type: 3}
 --- !u!4 &1738758839
 Transform:
   m_ObjectHideFlags: 0
@@ -1969,7 +2047,7 @@ Transform:
   m_GameObject: {fileID: 2019946517}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 0}
+  m_LocalPosition: {x: 0, y: 9.34, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2055,9 +2133,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 2019946517}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: fa4feffba88dce746a2607f0ec6233b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  guid: 88cdd9a4-a391-4a6e-9d7f-66ba2baa985b
+  script: {fileID: 7783096336541887851, guid: 1d19f418d8ad62340ba2a826511554f6, type: 3}
+  scriptPath: Assets/Code/CharacterSpawner.lua
+  forceContext: 0
+  metadata:
+    name: CharacterSpawner
+    singleton: 0
+    decorators: []
+    properties: []
+    displayIcon: {fileID: 0}
+    displayName: 
 --- !u!1 &2027739943
 GameObject:
   m_ObjectHideFlags: 0
