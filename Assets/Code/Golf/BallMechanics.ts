@@ -20,12 +20,12 @@ export default class BallMechanics extends AirshipBehaviour {
 	private rb: Rigidbody;
 	private lastVelocity: Vector3;
 
-	public static isEnabled = true;
-	public static counter = 0;
+	public isEnabled = true;
+	public counter = 0;
 	declare public strengthBar: GameObject;
 	declare public shootingIndicator: GameObject;
 	declare public baseStrength: number;
-	declare public static holeText: TMP_Text;
+	declare public holeText: TMP_Text;
 
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
@@ -59,7 +59,7 @@ export default class BallMechanics extends AirshipBehaviour {
 			}
 			const tmpText = GameObject.Find("HitText");
 			if (tmpText) {
-				BallMechanics.holeText = tmpText.GetComponent<TMP_Text>()!;
+				this.holeText = tmpText.GetComponent<TMP_Text>()!;
 			}
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
@@ -74,7 +74,7 @@ export default class BallMechanics extends AirshipBehaviour {
 					!this.cooldown &&
 					speed &&
 					speed.sqrMagnitude <= 0.1 &&
-					BallMechanics.isEnabled
+					this.isEnabled
 				) {
 					this.rb.linearVelocity = Vector3.zero;
 					this.oldPosition = this.position;
@@ -107,6 +107,8 @@ export default class BallMechanics extends AirshipBehaviour {
 							.mul(this.rb.mass)
 							.add(new Vector3(0, 2 * this.strength, 0));
 						this.rb.AddForce(force, ForceMode.Impulse);
+						this.counter += 1;
+						this.holeText.text = tostring(this.counter);
 						this.cooldown = true;
 						this.active = false;
 						Destroy(this.instance);
