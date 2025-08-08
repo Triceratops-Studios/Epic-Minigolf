@@ -171,6 +171,12 @@ export default class BallMechanics extends AirshipBehaviour {
 			}
 			this.updating = false;
 		}
+
+		if (this.transform.position.y <= -15) {
+			this.rb.position = this.oldPosition;
+			this.rb.linearVelocity = Vector3.zero;
+		}
+
 		this.lastVelocity = this.rb.linearVelocity;
 	}
 }
