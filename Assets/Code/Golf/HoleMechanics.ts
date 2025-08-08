@@ -1,18 +1,26 @@
 import { Airship } from "@Easy/Core/Shared/Airship";
-import Character from "@Easy/Core/Shared/Character/Character";
-import { ControlScheme, Mouse, Preferred, Touchscreen } from "@Easy/Core/Shared/UserInput";
 import { Game } from "@Easy/Core/Shared/Game";
-import { ActionInputType } from "@Easy/Core/Shared/Input/InputUtil";
 import BallMechanics from "./BallMechanics";
+import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
 export default class HoleMechanics extends AirshipBehaviour {
 	private isInHole: boolean;
+	private killSignal = new NetworkSignal<string>("killSignal");
+
+	OnStart() {
+		if (!Game.IsServer) return;
+		this.killSignal.client.OnServerEvent((gameObject) => {
+			print(gameObject);
+			Airship.Damage.InflictDamage(GameObject.Find(gameObject), 1000, undefined, {});
+		});
+	}
+
 	OnTriggerEnter(collider: Collider): void {
 		if (!Game.IsClient()) return;
 		if (!collider.CompareTag("Character")) return;
 		if (this.isInHole) return;
 		this.isInHole = true;
-		print("YOU MADE IT?");
+		print("triggered");
 
 		if (collider.gameObject.name === `Character_${Game.localPlayer.username}`) {
 			const rb = collider.gameObject.GetComponent<Rigidbody>();
@@ -20,22 +28,27 @@ export default class HoleMechanics extends AirshipBehaviour {
 				const ballMechanics =
 					GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
 				ballMechanics.isEnabled = false;
-				task.wait(1);
-				if (!this.isInHole) {
-					ballMechanics.isEnabled = false;
-					return;
-				}
-				ballMechanics.counter = 0;
-				ballMechanics.holeText.text = tostring(ballMechanics.counter);
-				Airship.Damage.InflictDamage(collider.gameObject, 1000, undefined, {});
+				task.delay(1, () => {
+					if (!this.isInHole) {
+						ballMechanics.isEnabled = true;
+						return;
+					}
+					ballMechanics.counter = 0;
+					ballMechanics.holeText.text = tostring(ballMechanics.counter);
+					this.killSignal.client.FireServer(collider.gameObject.name);
+				});
 			}
 		}
-		GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!.isEnabled = true;
 	}
 
 	protected OnTriggerExit(collider: Collider): void {
 		if (!Game.IsClient()) return;
 		if (!collider.CompareTag("Character")) return;
 		this.isInHole = false;
+
+		if (collider.gameObject.name === `Character_${Game.localPlayer.username}`) {
+			const ballMechanics = GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
+			ballMechanics.isEnabled = true;
+		}
 	}
 }
