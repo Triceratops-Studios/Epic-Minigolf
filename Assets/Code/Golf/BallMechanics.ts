@@ -19,7 +19,6 @@ export default class BallMechanics extends AirshipBehaviour {
 	private camera: Camera | undefined;
 	private rb: Rigidbody;
 	private lastVelocity: Vector3;
-	private friction = 1;
 
 	public static isEnabled = true;
 	public static counter = 0;
@@ -60,7 +59,6 @@ export default class BallMechanics extends AirshipBehaviour {
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
 			Mouse.onLeftDown.Connect(() => {
-				this.friction = 1;
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
 				const speed = this.rb.linearVelocity;
@@ -153,11 +151,6 @@ export default class BallMechanics extends AirshipBehaviour {
 			}
 		} else if (this.cooldown && this.pointer) {
 			const rotation = this.updateLocation(this.pointer, 2);
-
-			this.friction -= dt / 20;
-			math.max(0, this.friction);
-			const frictionVelocity = this.rb.linearVelocity.mul(this.friction);
-			this.rb.linearVelocity = new Vector3(frictionVelocity.x, this.rb.linearVelocity.y, frictionVelocity.z);
 
 			if (this.updating) {
 				return;
