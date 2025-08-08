@@ -35,7 +35,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	protected override Update(dt: number): void {
 		if (!Game.IsClient()) return;
 
-		this.rb.linearVelocity = this.rb.linearVelocity.mul(1 - dt / 5);
+		this.rb.linearVelocity = this.rb.linearVelocity.mul(1 - dt);
 
 		this.lastVelocity = this.rb.linearVelocity;
 	}
