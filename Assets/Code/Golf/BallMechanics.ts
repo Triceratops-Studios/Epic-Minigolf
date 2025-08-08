@@ -110,11 +110,13 @@ export default class BallMechanics extends AirshipBehaviour {
 						this.counter += 1;
 						this.holeText.text = tostring(this.counter);
 						this.cooldown = true;
+						this.active = false;
+						Destroy(this.instance);
+						this.strength = 0;
+						// BallMechanics.counter += 1;
+						// BallMechanics.holeText.text = tostring(BallMechanics.counter);
 					}
 				}
-				this.active = false;
-				Destroy(this.instance);
-				this.strength = 0;
 			});
 		}
 	}
