@@ -11,16 +11,11 @@ export default class HoleMechanics extends AirshipBehaviour {
     	if (!Game.IsClient()) return;
 		BallMechanics.isEnabled = false;
 		task.wait(0.1)
+		const character = Game.localPlayer;
 		print("YOU MADE IT?");
-		const player = Game.localPlayer;
-		const character = player.character;
-		if (!character) {
-			print("sorry"); 
-			return;
-		}
 		
-		if (collider.gameObject.name === character.name) {
-			print("YOU MADE IT!")
+		if (collider.gameObject.name === `Character_${Game.localPlayer.username}`) {
+			Airship.Damage.InflictDamage(collider.gameObject, 1000, undefined, {})
 		}
 		BallMechanics.isEnabled = true;
 	}
