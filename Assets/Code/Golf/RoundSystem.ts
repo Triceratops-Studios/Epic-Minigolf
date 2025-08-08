@@ -14,54 +14,56 @@ export default class RoundSystem extends AirshipBehaviour {
 	private intermission = 15;
 	private rounds = 8;
 	private team: Team;
-	private updating = false
+	private updating = false;
 	private wait = 0;
 	private pending: string | undefined;
 
 	protected JoinRound(player: Player): void {
-		this.team.AddPlayer(player)
+		this.team.AddPlayer(player);
 	}
 
 	override Start(): void {
-		if (!Game.IsServer()) {return}
-
-
+		if (!Game.IsServer()) {
+			return;
+		}
 	}
 	override Update(dt: number): void {
-		if (!Game.IsServer() || this.updating) {return}
+		if (!Game.IsServer() || this.updating) {
+			return;
+		}
 		this.updating = true;
-		
+
 		switch (RoundSystem.status) {
 			case "intermission":
-				this.team = new Team("In Round", "inround", ColorPallette.palette[5])
-				Airship.Teams.RegisterTeam(this.team)
+				this.team = new Team("In Round", "inround", ColorPallette.palette[5]);
+				Airship.Teams.RegisterTeam(this.team);
 				for (let i = this.intermission; i > 0; i--) {
 					//message players to join
-    				task.wait(1)
+					task.wait(1);
 				}
 				RoundSystem.status = "setup";
 				break;
-				
+
 			case "setup":
 				RoundSystem.status = "running";
 				break;
-				
+
 			case "running":
 				RoundSystem.status = "cleanup";
 				break;
-				
+
 			case "cleanup":
-				Airship.Teams.RemoveTeam(this.team)
-				RoundSystem.scores = {}
+				Airship.Teams.RemoveTeam(this.team);
+				RoundSystem.scores = {};
 				break;
-				
+
 			case "waiting":
 				for (let i = this.wait; i > 0; i--) {
 					//message players to join
-    				task.wait(1)
+					task.wait(1);
 				}
-				this.wait = 0
-				RoundSystem.status = this.pending || "Intermission"
+				this.wait = 0;
+				RoundSystem.status = this.pending || "Intermission";
 				break;
 		}
 		this.updating = false;
