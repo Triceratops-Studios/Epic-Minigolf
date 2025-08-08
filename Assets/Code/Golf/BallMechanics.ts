@@ -19,6 +19,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	private rb!: Rigidbody;
 	private lastVelocity: Vector3;
 
+	public static isEnabled = true;
 	public static counter = 0;
 	declare public strengthBar: GameObject;
 	declare public shootingIndicator: GameObject;
