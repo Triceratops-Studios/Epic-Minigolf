@@ -9,14 +9,17 @@ export default class HoleMechanics extends AirshipBehaviour {
 	OnTriggerEnter(collider: Collider): void {
 		if (!Game.IsClient()) return;
 		BallMechanics.isEnabled = false;
-		task.wait(1);
-		BallMechanics.counter = 0;
-		BallMechanics.holeText.text = tostring(BallMechanics.counter);
+		task.wait(0.2);
+		// BallMechanics.counter = 0;
+		// BallMechanics.holeText.text = tostring(BallMechanics.counter);
 		const character = Game.localPlayer;
 		print("YOU MADE IT?");
 
 		if (collider.gameObject.name === `Character_${Game.localPlayer.username}`) {
-			Airship.Damage.InflictDamage(collider.gameObject, 1000, undefined, {});
+			const rb = collider.gameObject.GetComponent<Rigidbody>();
+			if (rb && rb.linearVelocity.magnitude > 0.15) {
+				Airship.Damage.InflictDamage(collider.gameObject, 1000, undefined, {});
+			}
 		}
 		BallMechanics.isEnabled = true;
 	}

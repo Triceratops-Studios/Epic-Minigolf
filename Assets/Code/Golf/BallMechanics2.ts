@@ -12,8 +12,8 @@ export default class BallMechanics extends AirshipBehaviour {
 	private active = false;
 	private cooldown = false;
 	private updating = false;
-	private instance: GameObject;
-	private pointer: GameObject;
+	private static instance: GameObject;
+	private static pointer: GameObject;
 	private character: Character | undefined;
 	private position: Vector3;
 	private oldPosition: Vector3;
@@ -23,7 +23,6 @@ export default class BallMechanics extends AirshipBehaviour {
 	declare public strengthBar: GameObject;
 	declare public shootingIndicator: GameObject;
 	declare public baseStrength: number;
-
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
 		object.transform.position = this.position;
@@ -42,15 +41,6 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 		}
-	}
-
-	OnTriggerEnter(collider: Collider): void {
-    	if (!Game.IsClient() || collider.name === "HOLE" || !this.character) return
-
-		this.character.transform.position = this.oldPosition;
-		this.character.movement.SetVelocity(Vector3.zero);
-		const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
-		movement.accelerationForce = 0;
 	}
 
 	override Start(): void {
@@ -82,13 +72,13 @@ export default class BallMechanics extends AirshipBehaviour {
 					this.oldPosition = this.position;
 
 					this.active = true;
-					this.instance = Instantiate(this.strengthBar);
-					this.updateLocation(this.instance, undefined);
+					BallMechanics.instance = Instantiate(this.strengthBar);
+					this.updateLocation(BallMechanics.instance, undefined);
 
-					this.pointer = Instantiate(this.shootingIndicator);
-					this.updateLocation(this.pointer, 1);
+					BallMechanics.pointer = Instantiate(this.shootingIndicator);
+					this.updateLocation(BallMechanics.pointer, 1);
 
-					const graphics = this.pointer.GetComponentsInChildren<Image>(true);
+					const graphics = BallMechanics.pointer.GetComponentsInChildren<Image>(true);
 					for (const graphic of graphics) {
 						graphic.color = this.color;
 					}
@@ -116,7 +106,7 @@ export default class BallMechanics extends AirshipBehaviour {
 					}
 				}
 				this.active = false;
-				Destroy(this.instance);
+				Destroy(BallMechanics.instance);
 				this.strength = 0;
 			});
 		}
@@ -129,7 +119,7 @@ export default class BallMechanics extends AirshipBehaviour {
 		this.position = this.character.transform.position;
 
 		if (this.active) {
-			this.updateLocation(this.pointer, 1);
+			this.updateLocation(BallMechanics.pointer, 1);
 
 			this.strength += this.change * dt;
 			this.strength = math.clamp(this.strength, 0, 1);
@@ -138,7 +128,7 @@ export default class BallMechanics extends AirshipBehaviour {
 				this.change *= -1;
 			}
 
-			const background = this.instance.transform.Find("Background");
+			const background = BallMechanics.instance.transform.Find("Background");
 			const bar = background?.transform.Find("Strength");
 			if (bar) {
 				bar.transform.localScale = new Vector3(1, this.strength, 1);
@@ -153,14 +143,14 @@ export default class BallMechanics extends AirshipBehaviour {
 					shake.movementsPerSecond = 100 * mult;
 				}
 			}
-		} else if (this.cooldown && this.pointer) {
-			const rotation = this.updateLocation(this.pointer, 2);
+		} else if (this.cooldown && BallMechanics.pointer) {
+			const rotation = this.updateLocation(BallMechanics.pointer, 2);
 
 			if (this.updating) {
 				return;
 			}
 			this.updating = true;
-			const circle = this.pointer.transform.Find("Circle");
+			const circle = BallMechanics.pointer.transform.Find("Circle");
 			if (circle) {
 				const graphic = circle.GetComponent<Image>();
 				if (graphic && !(graphic.color.a === 0)) {
@@ -172,7 +162,7 @@ export default class BallMechanics extends AirshipBehaviour {
 
 			if (speed.magnitude <= 0.15) {
 				this.cooldown = false;
-				Destroy(this.pointer);
+				Destroy(BallMechanics.pointer);
 				const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
 				movement.accelerationForce = 0;
 			} else {

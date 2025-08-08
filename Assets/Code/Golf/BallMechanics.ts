@@ -107,14 +107,14 @@ export default class BallMechanics extends AirshipBehaviour {
 							.mul(this.rb.mass)
 							.add(new Vector3(0, 2 * this.strength, 0));
 						this.rb.AddForce(force, ForceMode.Impulse);
-						BallMechanics.counter += 1;
-						BallMechanics.holeText.text = tostring(BallMechanics.counter);
 						this.cooldown = true;
+						this.active = false;
+						Destroy(this.instance);
+						this.strength = 0;
+						// BallMechanics.counter += 1;
+						// BallMechanics.holeText.text = tostring(BallMechanics.counter);
 					}
 				}
-				this.active = false;
-				Destroy(this.instance);
-				this.strength = 0;
 			});
 		}
 	}
