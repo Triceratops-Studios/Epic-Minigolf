@@ -113,8 +113,6 @@ export default class BallMechanics extends AirshipBehaviour {
 						this.active = false;
 						Destroy(this.instance);
 						this.strength = 0;
-						// BallMechanics.counter += 1;
-						// BallMechanics.holeText.text = tostring(BallMechanics.counter);
 					}
 				}
 			});
@@ -172,7 +170,7 @@ export default class BallMechanics extends AirshipBehaviour {
 					task.wait(0.1);
 				}
 			}
-			if (this.rb.linearVelocity.sqrMagnitude <= 0.15) {
+			if (this?.rb.linearVelocity.sqrMagnitude <= 0.15) {
 				this.rb.linearVelocity = Vector3.zero;
 				this.cooldown = false;
 				Destroy(this.pointer);
