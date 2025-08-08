@@ -57,9 +57,9 @@ export default class BallMechanics extends AirshipBehaviour {
 			if (rigidbody) {
 				this.rb = rigidbody;
 			}
-			const tmpText = GameObject.FindAnyObjectByType<TMP_Text>();
+			const tmpText = GameObject.Find("HitText");
 			if (tmpText) {
-				BallMechanics.holeText = tmpText;
+				BallMechanics.holeText = tmpText.GetComponent<TMP_Text>()!;
 			}
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
