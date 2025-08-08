@@ -14,11 +14,9 @@ export default class BallMechanics extends AirshipBehaviour {
 	private updating = false;
 	private instance: GameObject;
 	private pointer: GameObject;
+	private character: Character | undefined;
 	private position: Vector3;
 	private oldPosition: Vector3;
-	private camera: Camera | undefined;
-	private rb!: Rigidbody;
-	private lastVelocity: Vector3;
 
 	public static isEnabled = true;
 	public static counter = 0;
@@ -29,13 +27,13 @@ export default class BallMechanics extends AirshipBehaviour {
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
 		object.transform.position = this.position;
-		if (rotation && this.rb) {
+		if (rotation && this.character) {
 			if (rotation === 1) {
-				const lookVec = this.rb.transform.forward;
+				const lookVec = this.character.movement.GetLookVector();
 				const angleY = math.atan2(lookVec.x, lookVec.z) * (180 / math.pi);
 				object.transform.rotation = Quaternion.Euler(90, angleY, 0);
 			} else {
-				const velocity = this.rb.linearVelocity;
+				const velocity = this.character?.movement.GetVelocity();
 				if (velocity.magnitude >= 0.01) {
 					const lookRotation = Quaternion.LookRotation(velocity);
 					const euler = lookRotation.eulerAngles;
@@ -46,32 +44,44 @@ export default class BallMechanics extends AirshipBehaviour {
 		}
 	}
 
+	OnTriggerEnter(collider: Collider): void {
+    	if (!Game.IsClient() || collider.name === "HOLE" || !this.character) return
+
+		this.character.transform.position = this.oldPosition;
+		this.character.movement.SetVelocity(Vector3.zero);
+		const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+		movement.accelerationForce = 0;
+	}
+
 	override Start(): void {
 		if (Game.IsClient()) {
-			if (this.gameObject.name !== `Character_${Game.localPlayer.username}`) {
+			this.character = Game.localPlayer.character;
+			const camera = Airship.Camera.cameraRig?.mainCamera;
+
+			if (this.character?.gameObject !== this.gameObject) {
 				Destroy(this);
 			}
-
-			const rigidbody = this.gameObject.GetComponent<Rigidbody>();
-			if (rigidbody) {this.rb = rigidbody;}
-			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
 			Mouse.onLeftDown.Connect(() => {
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
-				const speed = this.rb.linearVelocity;
+				const speed = this.character?.movement.GetVelocity();
 				if (
 					Mouse.isLeftDown &&
 					!this.active &&
-					this.rb &&
+					this.character &&
 					!this.cooldown &&
 					speed &&
 					speed.magnitude <= 0.1 &&
 					BallMechanics.isEnabled
 				) {
-					this.rb.linearVelocity = Vector3.zero;
+					this.character?.movement.SetVelocity(Vector3.zero);
+					const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+					movement.accelerationForce = 0;
+
 					this.oldPosition = this.position;
 
+					this.active = true;
 					this.instance = Instantiate(this.strengthBar);
 					this.updateLocation(this.instance, undefined);
 
@@ -82,14 +92,13 @@ export default class BallMechanics extends AirshipBehaviour {
 					for (const graphic of graphics) {
 						graphic.color = this.color;
 					}
-					this.active = true;
 				}
 			});
 
 			Mouse.onLeftUp.Connect(() => {
 				if (this.active) {
-					if (this.rb) {
-						let forward = this.rb.transform.forward;
+					if (this.character) {
+						let forward = this.character.movement.GetLookVector();
 						forward = new Vector3(forward.x, 0, forward.z).normalized;
 						const force = forward
 							.mul(
@@ -98,7 +107,10 @@ export default class BallMechanics extends AirshipBehaviour {
 							)
 							.mul(0.2 * this.strength + 1)
 							.add(new Vector3(0, 2 * this.strength, 0));
-						this.rb.AddForce(force, ForceMode.Impulse);
+						const rb = this.character.transform.GetComponent<Rigidbody>();
+						rb.AddForce(force, ForceMode.Impulse);
+						const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+						movement.accelerationForce = 1.5 * this.strength;
 						BallMechanics.counter += 1;
 						this.cooldown = true;
 					}
@@ -109,19 +121,14 @@ export default class BallMechanics extends AirshipBehaviour {
 			});
 		}
 	}
+
 	protected override Update(dt: number): void {
-		if (!Game.IsClient() || !this.rb) {
+		if (!(Game.IsClient() && this.character)) {
 			return;
 		}
-		this.position = this.rb.transform.position;
+		this.position = this.character.transform.position;
 
 		if (this.active) {
-			if (this.camera) {
-				const cameraForward = this.camera.transform.forward;
-				const targetRotation = Quaternion.LookRotation(cameraForward, Vector3.up);
-				this.rb.transform.rotation = targetRotation;
-			}
-
 			this.updateLocation(this.pointer, 1);
 
 			this.strength += this.change * dt;
@@ -161,53 +168,34 @@ export default class BallMechanics extends AirshipBehaviour {
 					task.wait(0.1);
 				}
 			}
+			const speed = this.character.movement.GetVelocity();
 
-			if (this.lastVelocity.magnitude <= 0.15) {
+			if (speed.magnitude <= 0.15) {
 				this.cooldown = false;
 				Destroy(this.pointer);
+				const movement = this.character.movement.GetComponent<CharacterMovementSettings>();
+				movement.accelerationForce = 0;
 			} else {
-				// const rayOrigin = this.position.add(new Vector3(0, 0, 0));
-				// const rayDirection = speed.normalized;
-				// const mask = LayerMask.GetMask("Default");
+				const rayOrigin = this.position.add(new Vector3(0, 0, 0));
+				const rayDirection = speed.normalized;
+				const mask = LayerMask.GetMask("Default");
 
-				// const [hit, point, normal, collider] = Physics.Raycast(rayOrigin, rayDirection, 0.7 + speed.magnitude / 75, mask);
+				const [hit, point, normal, collider] = Physics.Raycast(rayOrigin, rayDirection, 0.7 + speed.magnitude / 75, mask);
 
-				// if (hit && normal) {
-				// 	const upDot = Vector3.Dot(normal, new Vector3(0, 1, 0));
-				// 	const isWall = upDot < 0.1;
-				// 	print(upDot, collider.name, (isWall && Vector3.Dot(rayDirection, normal)))
+				if (hit && normal) {
+					const upDot = Vector3.Dot(normal, new Vector3(0, 1, 0));
+					const isWall = upDot < 0.1;
+					print(upDot, collider.name, (isWall && Vector3.Dot(rayDirection, normal)))
 
-				// 	if (isWall && Vector3.Dot(rayDirection, normal) < 0) {
+					if (isWall && Vector3.Dot(rayDirection, normal) < 0) {
 						
-				// 		const reflected = Vector3.Reflect(speed, normal);
-				// 		this.character.movement.SetVelocity(reflected.mul(0.9));
-				// 	}
-				// }
+						const reflected = Vector3.Reflect(speed, normal);
+						this.character.movement.SetVelocity(reflected.mul(0.9));
+					}
+				}
 			}
 			this.updating = false;
 		} else if (!this.cooldown) {
-		}
-	}
-
-	protected override OnCollisionEnter(collision: Collision): void {
-		if (!Game.IsClient()) {
-			return;
-		}
-
-		if (collision.gameObject.layer !== LayerMask.NameToLayer("Track")) {
-			return;
-		}
-
-		const contact = collision.contacts[0];
-		print(contact);
-		const normal = contact.normal;
-		print(normal);
-		const currentVelocity = this.lastVelocity;
-		print(currentVelocity);
-
-		if (currentVelocity && currentVelocity.magnitude > 0.1 && Vector3.Dot(currentVelocity.normalized, normal) < 0) {
-			const reflected = Vector3.Reflect(currentVelocity, normal);
-			this.rb.AddForce(reflected.mul(currentVelocity.magnitude));
 		}
 	}
 }
