@@ -25,6 +25,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	declare public strengthBar: GameObject;
 	declare public shootingIndicator: GameObject;
 	declare public baseStrength: number;
+	declare public static holeText: TMP_Text;
 
 	private color = ColorPallette.random();
 	private updateLocation(object: GameObject, rotation: number | undefined) {
@@ -55,6 +56,10 @@ export default class BallMechanics extends AirshipBehaviour {
 			const rigidbody = this.gameObject.GetComponent<Rigidbody>();
 			if (rigidbody) {
 				this.rb = rigidbody;
+			}
+			const tmpText = GameObject.Find("HitText");
+			if (tmpText) {
+				BallMechanics.holeText = tmpText.GetComponent<TMP_Text>()!;
 			}
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
@@ -103,6 +108,7 @@ export default class BallMechanics extends AirshipBehaviour {
 							.add(new Vector3(0, 2 * this.strength, 0));
 						this.rb.AddForce(force, ForceMode.Impulse);
 						BallMechanics.counter += 1;
+						BallMechanics.holeText.text = tostring(BallMechanics.counter);
 						this.cooldown = true;
 					}
 				}
