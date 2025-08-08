@@ -27,17 +27,15 @@ export default class BallMechanics extends AirshipBehaviour {
 
 	protected override Start(): void {
 		this.rb = this.gameObject.GetComponent<Rigidbody>()!;
-		const target = new GameObject("CameraTarget");
-		this.cameraTargetTransform = target.transform;
-		task.delay(3, () => {
-			this.rb.AddForce(new Vector3(1000, 0, 0));
+		task.delay(4, () => {
+			this.rb.AddForce(new Vector3(1000, 100, 400));
 		});
 	}
 
 	protected override Update(dt: number): void {
 		if (!Game.IsClient()) return;
 
-		this.rb.linearVelocity = this.rb.linearVelocity.mul(1 - dt);
+		this.rb.linearVelocity = this.rb.linearVelocity.mul(1 - dt / 5);
 
 		this.lastVelocity = this.rb.linearVelocity;
 	}
@@ -60,7 +58,7 @@ export default class BallMechanics extends AirshipBehaviour {
 
 		if (currentVelocity && currentVelocity.magnitude > 0.1 && Vector3.Dot(currentVelocity.normalized, normal) < 0) {
 			const reflected = Vector3.Reflect(currentVelocity, normal);
-			this.rb.linearVelocity = reflected.mul(currentVelocity.magnitude); //.mul(0.025);
+			this.rb.AddForce(reflected.mul(currentVelocity.magnitude));
 		}
 	}
 }
