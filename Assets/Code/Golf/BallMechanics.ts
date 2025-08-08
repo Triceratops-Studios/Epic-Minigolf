@@ -17,8 +17,9 @@ export default class BallMechanics extends AirshipBehaviour {
 	private position: Vector3;
 	private oldPosition: Vector3;
 	private camera: Camera | undefined;
-	private rb!: Rigidbody;
+	private rb: Rigidbody;
 	private lastVelocity: Vector3;
+	private friction = 1;
 
 	public static isEnabled = true;
 	public static counter = 0;
@@ -59,6 +60,7 @@ export default class BallMechanics extends AirshipBehaviour {
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
 			Mouse.onLeftDown.Connect(() => {
+				this.friction = 1;
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
 				const speed = this.rb.linearVelocity;
@@ -151,6 +153,11 @@ export default class BallMechanics extends AirshipBehaviour {
 		} else if (this.cooldown && this.pointer) {
 			const rotation = this.updateLocation(this.pointer, 2);
 
+			this.friction -= dt / 20;
+			math.max(0, this.friction);
+			const frictionVelocity = this.rb.linearVelocity.mul(this.friction);
+			this.rb.linearVelocity = new Vector3(frictionVelocity.x, this.rb.linearVelocity.y, frictionVelocity.z);
+
 			if (this.updating) {
 				return;
 			}
@@ -164,48 +171,13 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 
-			if (this.lastVelocity.magnitude <= 0.15) {
+			if (this.lastVelocity.magnitude <= 0.05) {
 				this.cooldown = false;
-				Destroy(this.pointer);
-			} else {
-				// const rayOrigin = this.position.add(new Vector3(0, 0, 0));
-				// const rayDirection = speed.normalized;
-				// const mask = LayerMask.GetMask("Default");
-				// const [hit, point, normal, collider] = Physics.Raycast(rayOrigin, rayDirection, 0.7 + speed.magnitude / 75, mask);
-				// if (hit && normal) {
-				// 	const upDot = Vector3.Dot(normal, new Vector3(0, 1, 0));
-				// 	const isWall = upDot < 0.1;
-				// 	print(upDot, collider.name, (isWall && Vector3.Dot(rayDirection, normal)))
-				// 	if (isWall && Vector3.Dot(rayDirection, normal) < 0) {
-				// 		const reflected = Vector3.Reflect(speed, normal);
-				// 		this.character.movement.SetVelocity(reflected.mul(0.9));
-				// 	}
-				// }
+				print("huh");
+				//Destroy(this?.pointer);
 			}
 			this.updating = false;
-		} else if (!this.cooldown) {
 		}
-	}
-
-	protected override OnCollisionEnter(collision: Collision): void {
-		if (!Game.IsClient()) {
-			return;
-		}
-
-		if (collision.gameObject.layer !== LayerMask.NameToLayer("Track")) {
-			return;
-		}
-
-		const contact = collision.contacts[0];
-		print(contact);
-		const normal = contact.normal;
-		print(normal);
-		const currentVelocity = this.lastVelocity;
-		print(currentVelocity);
-
-		if (currentVelocity && currentVelocity.magnitude > 0.1 && Vector3.Dot(currentVelocity.normalized, normal) < 0) {
-			const reflected = Vector3.Reflect(currentVelocity, normal);
-			this.rb.AddForce(reflected.mul(currentVelocity.magnitude));
-		}
+		this.lastVelocity = this.rb.linearVelocity;
 	}
 }
