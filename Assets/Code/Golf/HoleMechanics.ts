@@ -26,7 +26,7 @@ export default class HoleMechanics extends AirshipBehaviour {
 			const rb = collider.gameObject.GetComponent<Rigidbody>();
 			if (rb && rb.linearVelocity.magnitude > 0.15) {
 				const ballMechanics =
-					GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
+				GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
 				ballMechanics.isEnabled = false;
 				task.delay(1, () => {
 					if (!this.isInHole) {
@@ -34,7 +34,7 @@ export default class HoleMechanics extends AirshipBehaviour {
 						return;
 					}
 					ballMechanics.counter = 0;
-					ballMechanics.holeText.text = tostring(ballMechanics.counter);
+					ballMechanics.holeText.text = `${ballMechanics.counter < 10 ? "0" + ballMechanics.counter : ballMechanics.counter}`;
 					this.killSignal.client.FireServer(collider.gameObject.name);
 				});
 			}

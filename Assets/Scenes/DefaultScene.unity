@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 4403614bd76feab43a395ac1f99cfaf4, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -348,6 +348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 647774294}
   - component: {fileID: 647774293}
+  - component: {fileID: 647774295}
   m_Layer: 0
   m_Name: Mini Golf Mania
   m_TagString: Untagged
@@ -393,6 +394,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &647774295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647774292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa4feffba88dce746a2607f0ec6233b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: 004da8e7-38fe-47a5-9f16-9d3dcdebe063
+  script: {fileID: 8672870350856313926, guid: 8c544198eea85874fa1df2deef21725a, type: 3}
+  scriptPath: Assets/Code/Golf/RoundSystem.lua
+  forceContext: 0
+  metadata:
+    name: RoundSystem
+    singleton: 0
+    decorators: []
+    properties: []
+    displayIcon: {fileID: 0}
+    displayName: 
 --- !u!1 &764383742
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,7 +1070,7 @@ PrefabInstance:
       addedObject: {fileID: 1179562556}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 241cf930257357542a77bc6d7fb552e4, type: 3}
---- !u!1001 &882897748
+--- !u!1001 &1074156109
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1054,80 +1078,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 151342007096537338, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 564255865830987829, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_text
-      value: '0
-
-'
-      objectReference: {fileID: 0}
-    - target: {fileID: 624672427073251403, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -448
-      objectReference: {fileID: 0}
-    - target: {fileID: 624672427073251403, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -471
-      objectReference: {fileID: 0}
-    - target: {fileID: 2049287719451232452, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490053430887496574, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490053430887496574, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490053430887496574, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3490053430887496574, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4086001290437510379, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -7.4003906
-      objectReference: {fileID: 0}
-    - target: {fileID: 4681309563039559862, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_Name
-      value: HitText
-      objectReference: {fileID: 0}
-    - target: {fileID: 5680108126272356716, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_Name
-      value: HitText
-      objectReference: {fileID: 0}
     - target: {fileID: 6328428245856780974, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
       propertyPath: m_Name
       value: GameUI
       objectReference: {fileID: 0}
     - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_fontSize
-      value: 125
-      objectReference: {fileID: 0}
-    - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 3d1a0a851b61d324e8a2b5f131e703a8, type: 2}
-    - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 125
-      objectReference: {fileID: 0}
-    - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 23711832046620636, guid: 3d1a0a851b61d324e8a2b5f131e703a8, type: 2}
-    - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
-      objectReference: {fileID: 0}
+    - target: {fileID: 8476166955123097128, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 23711832046620636, guid: 3d1a0a851b61d324e8a2b5f131e703a8, type: 2}
     - target: {fileID: 8555739834872841189, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1681,7 +1643,7 @@ SceneRoots:
   - {fileID: 647774294}
   - {fileID: 1309094771}
   - {fileID: 1134546952}
-  - {fileID: 882897748}
   - {fileID: 1738758839}
   - {fileID: 1158267733}
   - {fileID: 178810652}
+  - {fileID: 1074156109}

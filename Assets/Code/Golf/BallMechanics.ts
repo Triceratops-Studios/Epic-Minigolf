@@ -109,7 +109,7 @@ export default class BallMechanics extends AirshipBehaviour {
 							.add(new Vector3(0, 2 * this.strength, 0));
 						this.rb.AddForce(force, ForceMode.Impulse);
 						this.counter += 1;
-						this.holeText.text = tostring(this.counter);
+						this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
 						this.cooldown = true;
 						this.active = false;
 						Destroy(this.instance);
@@ -180,7 +180,7 @@ export default class BallMechanics extends AirshipBehaviour {
 		}
 
 		if (this.transform.position.y <= -15) {
-			this.rb.position = this.oldPosition;
+			this.rb.position = this.oldPosition.add(new Vector3(0, 2, 0));
 			this.rb.linearVelocity = Vector3.zero;
 		}
 
