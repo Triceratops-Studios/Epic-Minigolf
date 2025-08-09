@@ -48,6 +48,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	}
 
 	override Start(): void {
+		
 		if (Game.IsClient()) {
 			if (this.gameObject.name !== `Character_${Game.localPlayer.username}`) {
 				Destroy(this);
@@ -98,6 +99,8 @@ export default class BallMechanics extends AirshipBehaviour {
 					if (this.rb) {
 						let forward = this.rb.transform.forward;
 						forward = new Vector3(forward.x, 0, forward.z).normalized;
+						const test = Instantiate(this.shootingIndicator)
+						this.updateLocation(test, 1);
 						const force = forward
 							.mul(
 								((this.baseStrength * math.pow(this.strength * 2, 2)) / 4) * 3 +
