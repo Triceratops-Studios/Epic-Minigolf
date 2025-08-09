@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5163596002388066681}
   - component: {fileID: 1701721193424398196}
   - component: {fileID: 5314326988105692277}
-  - component: {fileID: 4646315884701148114}
+  - component: {fileID: 405072939600450434}
   m_Layer: 0
   m_Name: HOLE
   m_TagString: Untagged
@@ -109,7 +109,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4646315884701148114
+--- !u!114 &405072939600450434
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4feffba88dce746a2607f0ec6233b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  guid: 13619ecd-bf47-445b-93c9-ba006ff393a2
+  guid: d347444c-234a-40e8-9bd7-d7d96921e763
   script: {fileID: -5264612529118404227, guid: fc89f993780b11648bcaa1a4a4459378, type: 3}
   scriptPath: Assets/Code/Golf/HoleMechanics.lua
   forceContext: 0

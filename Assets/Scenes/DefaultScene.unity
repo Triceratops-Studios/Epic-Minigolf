@@ -1123,7 +1123,7 @@ PrefabInstance:
     - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -689170228000695932, guid: 3d1a0a851b61d324e8a2b5f131e703a8, type: 2}
+      objectReference: {fileID: 23711832046620636, guid: 3d1a0a851b61d324e8a2b5f131e703a8, type: 2}
     - target: {fileID: 7045068736264565898, guid: 97eef0be2337fff42a431005c89ef652, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1278,6 +1278,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 405072939600450434, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
+      propertyPath: script
+      value: 
+      objectReference: {fileID: -5264612529118404227, guid: fc89f993780b11648bcaa1a4a4459378, type: 3}
     - target: {fileID: 1342779687626228018, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -1334,10 +1338,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Track #1
       objectReference: {fileID: 0}
-    - target: {fileID: 5314326988105692277, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
-      propertyPath: m_Radius
-      value: 0.75
-      objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.7
@@ -1352,15 +1352,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8.004
+      value: -7.823
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.254
+      value: 0.6833
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -63.958
+      value: -63.723
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

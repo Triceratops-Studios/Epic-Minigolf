@@ -18,6 +18,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	private oldPosition: Vector3;
 	private camera: Camera | undefined;
 	private rb: Rigidbody;
+	private rotation: Vector3;
 	private lastVelocity: Vector3;
 
 	public isEnabled = true;
@@ -32,8 +33,8 @@ export default class BallMechanics extends AirshipBehaviour {
 		object.transform.position = this.position;
 		if (rotation && this.rb) {
 			if (rotation === 1) {
-				const lookVec = this.rb.transform.forward;
-				const angleY = math.atan2(lookVec.x, lookVec.z) * (180 / math.pi);
+				this.rotation = this.rb.transform.forward;
+				const angleY = math.atan2(this.rotation.x, this.rotation.z) * (180 / math.pi);
 				object.transform.rotation = Quaternion.Euler(90, angleY, 0);
 			} else {
 				const velocity = this.rb.linearVelocity;
@@ -97,10 +98,7 @@ export default class BallMechanics extends AirshipBehaviour {
 			Mouse.onLeftUp.Connect(() => {
 				if (this.active) {
 					if (this.rb) {
-						let forward = this.rb.transform.forward;
-						forward = new Vector3(forward.x, 0, forward.z).normalized;
-						const test = Instantiate(this.shootingIndicator)
-						this.updateLocation(test, 1);
+						const forward = new Vector3(this.rotation.x, 0, this.rotation.z).normalized;
 						const force = forward
 							.mul(
 								((this.baseStrength * math.pow(this.strength * 2, 2)) / 4) * 3 +
