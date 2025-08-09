@@ -1334,6 +1334,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Track #1
       objectReference: {fileID: 0}
+    - target: {fileID: 5314326988105692277, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
+      propertyPath: m_Radius
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.7
@@ -1348,15 +1352,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.823
+      value: -8.004
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6833
+      value: 0.254
       objectReference: {fileID: 0}
     - target: {fileID: 7487158504327581170, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -63.723
+      value: -63.958
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
