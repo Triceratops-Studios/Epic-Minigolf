@@ -2,6 +2,7 @@ import { Airship } from "@Easy/Core/Shared/Airship";
 import { Game } from "@Easy/Core/Shared/Game";
 import BallMechanics from "./BallMechanics";
 import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
+import RoundSystem from "./RoundSystem";
 
 export default class HoleMechanics extends AirshipBehaviour {
 	private isInHole: boolean;
@@ -33,6 +34,7 @@ export default class HoleMechanics extends AirshipBehaviour {
 						ballMechanics.isEnabled = true;
 						return;
 					}
+					RoundSystem.reportScore(Game.localPlayer, ballMechanics.counter);
 					ballMechanics.counter = 0;
 					ballMechanics.holeText.text = `${ballMechanics.counter < 10 ? "0" + ballMechanics.counter : ballMechanics.counter}`;
 					this.killSignal.client.FireServer(collider.gameObject.name);

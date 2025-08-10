@@ -9,29 +9,34 @@ import ColorPallette from "Minigolf/Settings/ColorPallette";
 export default class RoundSystem extends AirshipBehaviour {
 	public static status = "intermission"; //intermission, setup, cleanup, running, waiting, starting
 
-	static scores: { [name: string]: {} } = {};
-	private exampleScore: { [round: number]: number } = {};
+	public static scores: { [name: string]: {[round: number]: number} } = {};
 
 	private intermission = 15;
 	private rounds = 8;
-	private currentRound = 1;
 	private wait = 0;
-	private timer = 30;
+	private static timer = 30;
+	private static timeLeft = 30;
+	private static currentRound = 1;
 
-	private team: Team;
+	private static team: Team;
 	private updating = false;
 	private pending: string | undefined;
 
 	private tracks = new Array<GameObject>();
-	private currentTrack: GameObject;
+	private static currentTrack: GameObject | undefined;
 
-	protected JoinRound(player: Player): void {
+	public static JoinRound(player: Player): void {
 		this.team.AddPlayer(player);
 	}
 
-	override Start(): void {
-		if (!Game.IsServer()) {
-			return;
+	public static reportScore(player: Player, hits: number): void {
+		if (this.team.HasPlayer(player)) {
+			const score = math.round(this.timeLeft * 7 / hits * (1 + 0.2 * (TrackSpawner.getTrackInfo(this.currentTrack || -1)?.difficulty || 1)));
+			if (!this.scores[player.username]) {
+				this.scores[player.username] = {};
+			}
+			print(`Player ${player.username} scored ${score} in round ${this.currentRound}`);
+			this.scores[player.username][this.currentRound] = score || 0;
 		}
 	}
 	override Update(dt: number): void {
@@ -43,8 +48,8 @@ export default class RoundSystem extends AirshipBehaviour {
 
 		switch (RoundSystem.status) {
 			case "intermission":
-				this.team = new Team("In Round", "inround", ColorPallette.palette[5]);
-				Airship.Teams.RegisterTeam(this.team);
+				RoundSystem.team = new Team("In Round", "inround", ColorPallette.palette[5]);
+				Airship.Teams.RegisterTeam(RoundSystem.team);
 				for (let i = this.intermission; i > 0; i--) {
 					//message players to join
 					task.wait(1);
@@ -53,30 +58,31 @@ export default class RoundSystem extends AirshipBehaviour {
 				break;
 
 			case "starting":
-				let gameTracks = TrackSpawner.getTracks();
+				// let gameTracks = TrackSpawner.getTracks();
 
-				for (let i = this.rounds; i > 0; i--) {
-					const index = math.random(1, gameTracks.size()) - 1;
-					this.tracks.push(gameTracks[index]);
-					gameTracks.remove(index);
-				}
+				// for (let i = this.rounds; i > 0; i--) {
+				// 	const index = math.random(1, gameTracks.size()) - 1;
+				// 	this.tracks.push(gameTracks[index]);
+				// 	gameTracks.remove(index);
+				// }
 				RoundSystem.status = "setup";
 				break;
 
 			case "setup":
-				this.currentRound += 1
-				const track = this.tracks.shift();
-				if (track) {
-					RoundSystem.status = "running";
-					this.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
-					TrackSpawner.spawnTrack(track)
-				}
+				RoundSystem.currentRound += 1
+				// const track = this.tracks.shift();
+				// if (track) {
+				RoundSystem.status = "running";
+				// 	RoundSystem.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
+				// 	RoundSystem.currentTrack = TrackSpawner.spawnTrack(track)
+				// }
 				break;
 
 			case "running":
 				RoundSystem.status = "cleanup";
 				const timerText = GameObject.Find("TimerText")?.GetComponent<TMP_Text>();
-				for (let i = this.timer; i > 0; i--) {
+				for (let i = RoundSystem.timer; i >= 0; i--) {
+					RoundSystem.timeLeft = i;
 					const min = math.floor(i / 60);
 					const sec = i % 60
 
@@ -88,21 +94,28 @@ export default class RoundSystem extends AirshipBehaviour {
 				break;
 
 			case "cleanup":
-				if (this.currentTrack) {
-					Destroy(this.currentTrack);
+				if (RoundSystem.currentTrack) {
+					Destroy(RoundSystem.currentTrack);
 				}
-				if (this.currentRound >= this.rounds) {
-					Airship.Teams.RemoveTeam(this.team);
-					RoundSystem.scores = {};
+				if (RoundSystem.currentRound >= this.rounds) {
+					this.wait = 10;
 					RoundSystem.status = "waiting";
-					this.currentRound = 1;
-					this.timer = 30;
+					Airship.Teams.RemoveTeam(RoundSystem.team);
+					RoundSystem.scores = {};
+					RoundSystem.currentRound = 1;
+					RoundSystem.timer = 30;
+					RoundSystem.timeLeft = 30;
 					break;
+				} else {
+					this.pending = "setup";
+					this.wait = 5;
+					RoundSystem.status = "waiting";
+					
+					RoundSystem.currentTrack = undefined;
 				}
 
 			case "waiting":
 				for (let i = this.wait; i > 0; i--) {
-					//message players to join
 					task.wait(1);
 				}
 				this.wait = 0;

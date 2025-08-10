@@ -2,15 +2,12 @@ import { Asset } from "@Easy/Core/Shared/Asset";
 import TrackComponent from "./TrackComponent";
 
 export default class TrackSpawner extends AirshipBehaviour {
-	private static tracksFolder = Resources.LoadAll("Minigolf/Tracks")
-
 	static getTracks(): GameObject[] {
-		const tracksFolder = Asset.LoadAsset<GameObject>("Minigolf/Tracks");
-		tracksFolder.transform.GetChildCount();
+		const tracksFolder = Asset.LoadAsset<GameObject[]>("Minigolf/Tracks");
 
 		const tracks: GameObject[] = [];
-		for (let i = 0; i < tracksFolder.transform.GetChildCount(); i++) {
-			const track = tracksFolder.transform.GetChild(i).gameObject;
+		for (let i = 0; i < tracksFolder.size(); i++) {
+			const track = tracksFolder[i];
 			if (track.GetAirshipComponent<TrackComponent>()) {
 				tracks.push(track);
 			}
@@ -20,7 +17,7 @@ export default class TrackSpawner extends AirshipBehaviour {
 
 	static getTrackInfo(track: number | GameObject): { name: string, difficulty: number } | undefined {
 		if (typeIs(track, "number")) {
-			track = this.getTracks()[track];
+			track = this.getTracks()[track + 1];
 		}
 
 		if (!track) {return}
@@ -36,7 +33,7 @@ export default class TrackSpawner extends AirshipBehaviour {
 
 	static spawnTrack(track: number | GameObject): GameObject | undefined {
 		if (typeIs(track, "number")) {
-			track = this.getTracks()[track];
+			track = this.getTracks()[track + 1];
 		}
 
 		if (!track) {return}
