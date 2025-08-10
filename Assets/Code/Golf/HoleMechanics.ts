@@ -1,18 +1,19 @@
 import { Airship } from "@Easy/Core/Shared/Airship";
 import { Game } from "@Easy/Core/Shared/Game";
+import { Player } from "@Easy/Core/Shared/Player/Player";
 import BallMechanics from "./BallMechanics";
-import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 import RoundSystem from "./RoundSystem";
+import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
 export default class HoleMechanics extends AirshipBehaviour {
 	private isInHole: boolean;
-	private killSignal = new NetworkSignal<string>("killSignal");
+	private holeSend = new NetworkSignal<[player: Player, counter: number]>("holeSend");
 
 	OnStart() {
 		if (!Game.IsServer) return;
-		this.killSignal.client.OnServerEvent((gameObject) => {
-			print(gameObject);
-			Airship.Damage.InflictDamage(GameObject.Find(gameObject), 1000, undefined, {});
+		this.holeSend.client.OnServerEvent((player, counter) => {
+			RoundSystem.reportScore(player, counter);
+			Airship.Damage.InflictDamage(GameObject.Find(`Character_${player.username}`), 1000, undefined, {});
 		});
 	}
 
@@ -34,10 +35,9 @@ export default class HoleMechanics extends AirshipBehaviour {
 						ballMechanics.isEnabled = true;
 						return;
 					}
-					RoundSystem.reportScore(Game.localPlayer, ballMechanics.counter);
+					this.holeSend.client.FireServer(Game.localPlayer, ballMechanics.counter);
 					ballMechanics.counter = 0;
 					ballMechanics.holeText.text = `${ballMechanics.counter < 10 ? "0" + ballMechanics.counter : ballMechanics.counter}`;
-					this.killSignal.client.FireServer(collider.gameObject.name);
 				});
 			}
 		}

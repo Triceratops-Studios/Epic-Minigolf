@@ -5,6 +5,7 @@ import { Player } from "@Easy/Core/Shared/Player/Player";
 import { Team } from "@Easy/Core/Shared/Team/Team";
 import TrackSpawner from "./TrackSpawner";
 import ColorPallette from "Minigolf/Settings/ColorPallette";
+import BallMechanics from "./BallMechanics";
 
 export default class RoundSystem extends AirshipBehaviour {
 	public static status = "intermission"; //intermission, setup, cleanup, running, waiting, starting
@@ -12,7 +13,7 @@ export default class RoundSystem extends AirshipBehaviour {
 	public static scores: { [name: string]: {[round: number]: number} } = {};
 
 	private intermission = 15;
-	private rounds = 8;
+	private rounds = 5;
 	private wait = 0;
 	private static timer = 30;
 	private static timeLeft = 30;
@@ -30,12 +31,14 @@ export default class RoundSystem extends AirshipBehaviour {
 	}
 
 	public static reportScore(player: Player, hits: number): void {
+		if (player.character) {
+			Airship.Damage.InflictDamage(player.character.gameObject, 1000, undefined, {});
+		}
 		if (this.team.HasPlayer(player)) {
 			const score = math.round(this.timeLeft * 7 / hits * (1 + 0.2 * (TrackSpawner.getTrackInfo(this.currentTrack || -1)?.difficulty || 1)));
 			if (!this.scores[player.username]) {
 				this.scores[player.username] = {};
 			}
-			print(`Player ${player.username} scored ${score} in round ${this.currentRound}`);
 			this.scores[player.username][this.currentRound] = score || 0;
 		}
 	}
@@ -58,24 +61,45 @@ export default class RoundSystem extends AirshipBehaviour {
 				break;
 
 			case "starting":
-				// let gameTracks = TrackSpawner.getTracks();
+				let gameTracks = TrackSpawner.getTracks();
 
-				// for (let i = this.rounds; i > 0; i--) {
-				// 	const index = math.random(1, gameTracks.size()) - 1;
-				// 	this.tracks.push(gameTracks[index]);
-				// 	gameTracks.remove(index);
-				// }
+				for (let i = this.rounds; i > 0; i--) {
+					print(i)
+					const index = math.random(1, gameTracks.size()) - 1;
+					this.tracks.push(gameTracks[index]);
+					gameTracks.remove(index);
+				}
 				RoundSystem.status = "setup";
 				break;
 
 			case "setup":
 				RoundSystem.currentRound += 1
-				// const track = this.tracks.shift();
-				// if (track) {
-				RoundSystem.status = "running";
-				// 	RoundSystem.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
-				// 	RoundSystem.currentTrack = TrackSpawner.spawnTrack(track)
-				// }
+				const track = this.tracks.shift();
+				if (track) {
+					RoundSystem.status = "running";
+					RoundSystem.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
+					RoundSystem.currentTrack = TrackSpawner.spawnTrack(track)
+					const spawn = GameObject.Find("CharacterSpawner");
+
+					for (let player of Airship.Players.GetPlayers()) {
+						// if (Airship.Teams.FindByPlayer(player) !== RoundSystem.team) { continue; }
+
+						if (!RoundSystem.scores[player.username]) {
+							RoundSystem.scores[player.username] = {};
+						}
+						RoundSystem.scores[player.username][RoundSystem.currentRound] = 0;
+						
+						player.SpawnCharacter(spawn.transform.position, {
+							lookDirection: spawn.transform.forward,
+						});
+						task.delay(3, () => {
+							if (player.character) {
+								player.character.gameObject.GetAirshipComponent<BallMechanics>()!.isEnabled = true;
+							}
+						})
+					}
+					task.wait(3)
+				}
 				break;
 
 			case "running":
@@ -94,6 +118,15 @@ export default class RoundSystem extends AirshipBehaviour {
 				break;
 
 			case "cleanup":
+
+				for (let player of Airship.Players.GetPlayers()) {
+
+					// if (Airship.Teams.FindByPlayer(player) !== RoundSystem.team) { continue; }
+					const object = GameObject.Find(`Character_${player.username}`)
+					if (object) {
+						Airship.Damage.InflictDamage(object, 1000, undefined, {});
+					}
+				}
 				if (RoundSystem.currentTrack) {
 					Destroy(RoundSystem.currentTrack);
 				}

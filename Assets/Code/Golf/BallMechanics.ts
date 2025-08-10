@@ -21,7 +21,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	private rotation: Vector3;
 	private lastVelocity: Vector3;
 
-	public isEnabled = true;
+	public isEnabled = false;
 	public counter = 0;
 	declare public strengthBar: GameObject;
 	declare public shootingIndicator: GameObject;

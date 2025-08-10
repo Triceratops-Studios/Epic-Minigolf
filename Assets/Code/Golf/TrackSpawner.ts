@@ -3,15 +3,15 @@ import TrackComponent from "./TrackComponent";
 
 export default class TrackSpawner extends AirshipBehaviour {
 	static getTracks(): GameObject[] {
-		const tracksFolder = Asset.LoadAsset<GameObject[]>("Minigolf/Tracks");
 
+		let index = 1;
 		const tracks: GameObject[] = [];
-		for (let i = 0; i < tracksFolder.size(); i++) {
-			const track = tracksFolder[i];
-			if (track.GetAirshipComponent<TrackComponent>()) {
-				tracks.push(track);
-			}
-		}
+		while (true) {
+        	const asset = Asset.LoadAsset<GameObject>(`Resources/Tracks/Track${index}.prefab`);
+        	if (!asset) break;
+        	tracks.push(asset);
+        	index++;
+    	}
 		return tracks;
 	}
 
