@@ -78,6 +78,7 @@ export default class BallMechanics extends AirshipBehaviour {
 					speed.sqrMagnitude <= 0.1 &&
 					this.isEnabled
 				) {
+					print(this.isEnabled)
 					this.rb.linearVelocity = Vector3.zero;
 					this.oldPosition = this.position;
 

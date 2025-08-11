@@ -9,14 +9,14 @@ import BallMechanics from "./BallMechanics";
 import MobileChatToggleButton from "@Easy/Core/Shared/MainMenu/Components/MobileChatToggleButton";
 
 export default class RoundSystem extends AirshipBehaviour {
-	public static status = "intermission"; //intermission, setup, cleanup, running, waiting, starting, none
+	public static status = "waiting"; //intermission, setup, cleanup, running, waiting, starting, none
 
 	public static scores: { [name: string]: {[round: number]: number} } = {};
 
 	private intermission = 15;
 	private rounds = 5;
 	private wait = 0;
-	private requiredPlayers = 2;
+	private requiredPlayers = 1;
 	private static timer = 30;
 	private static timeLeft = 30;
 	private static currentRound = 0;
@@ -29,12 +29,11 @@ export default class RoundSystem extends AirshipBehaviour {
 	private static currentTrack: GameObject | undefined;
 
 	public static JoinRound(player: Player): void {
-		print(`Player ${player.username} joined the round!`);
 		if (RoundSystem.status === "none") {
 			RoundSystem.status = "intermission";
 		}
 
-		if (RoundSystem.status === "intermission") {
+		if (RoundSystem.status === "intermission" || RoundSystem.status === "starting") {
 			this.team.AddPlayer(player);
 		}
 	}
@@ -54,15 +53,15 @@ export default class RoundSystem extends AirshipBehaviour {
 
 	protected override Start(): void {
 		if (!Game.IsClient()) { return; }
-		const playButton = GameObject.Find("PlayButton");
-		if (playButton) {
-			const button = playButton.GetComponent<Button>()!;
-			if (button) {
-				button.onClick.Connect(() => {
-					RoundSystem.JoinRound(Game.localPlayer);
-				});
-			}
-		}
+		// const playButton = GameObject.Find("PlayButton");
+		// if (playButton) {
+		// 	const button = playButton.GetComponent<Button>()!;
+		// 	if (button) {
+		// 		button.onClick.Connect(() => {
+		// 			RoundSystem.JoinRound(Game.localPlayer);
+		// 		});
+		// 	}
+		// }
 	}
 
 	override Update(dt: number): void {
@@ -91,6 +90,11 @@ export default class RoundSystem extends AirshipBehaviour {
 					this.tracks.push(gameTracks[index]);
 					gameTracks.remove(index);
 				}
+
+				for (let player of Airship.Players.GetPlayers()) {
+					RoundSystem.JoinRound(player)
+				}
+
 				RoundSystem.status = "setup";
 				break;
 
@@ -105,7 +109,7 @@ export default class RoundSystem extends AirshipBehaviour {
 					const spawn = GameObject.Find("CharacterSpawner");
 
 					for (let player of Airship.Players.GetPlayers()) {
-						if (Airship.Teams.FindByPlayer(player) !== RoundSystem.team) { continue; }
+						if (player.team !== RoundSystem.team) { continue; }
 
 						if (!RoundSystem.scores[player.username]) {
 							RoundSystem.scores[player.username] = {};
@@ -178,11 +182,10 @@ export default class RoundSystem extends AirshipBehaviour {
 					task.wait(1);
 				}
 				this.wait = 0;
-				if (Airship.Players.GetPlayers().size() < this.requiredPlayers) {
-					RoundSystem.status = "none";
-					Airship.Chat.BroadcastMessage("Not enough players to start a new round");
+				if (Airship.Players.GetPlayers().size() < this.requiredPlayers && RoundSystem.currentRound === 0) {;
+					this.wait = 1;
 				} else {
-					RoundSystem.status = this.pending || "Intermission";
+					RoundSystem.status = this.pending || "intermission";
 				}
 				break;
 		}

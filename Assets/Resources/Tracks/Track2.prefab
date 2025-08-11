@@ -379,8 +379,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid: 0514ac9e-6c81-45d5-b63b-35ae9a9b7314
-  script: {fileID: 0}
-  scriptPath: Assets/Code/Golf/TrackS/TrackComponent.ts
+  script: {fileID: 3342925176954282739, guid: 44cc9efc763dd824483b543985821a95, type: 3}
+  scriptPath: Assets/Code/Golf/TrackComponent.lua
   forceContext: 0
   metadata:
     name: TrackComponent
