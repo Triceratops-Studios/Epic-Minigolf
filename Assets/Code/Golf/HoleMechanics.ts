@@ -7,15 +7,6 @@ import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
 export default class HoleMechanics extends AirshipBehaviour {
 	private isInHole: boolean;
-	private holeSend = new NetworkSignal<[player: Player, counter: number]>("holeSend");
-
-	OnStart() {
-		if (!Game.IsServer) return;
-		this.holeSend.client.OnServerEvent((player, counter) => {
-			RoundSystem.reportScore(player, counter);
-			Airship.Damage.InflictDamage(GameObject.Find(`Character_${player.username}`), 1000, undefined, {});
-		});
-	}
 
 	OnTriggerEnter(collider: Collider): void {
 		if (!Game.IsClient()) return;
@@ -28,14 +19,14 @@ export default class HoleMechanics extends AirshipBehaviour {
 			const rb = collider.gameObject.GetComponent<Rigidbody>();
 			if (rb && rb.linearVelocity.magnitude > 0.15) {
 				const ballMechanics =
-				GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
+					GameObject.FindGameObjectWithTag("Character").GetAirshipComponent<BallMechanics>()!;
 				ballMechanics.isEnabled = false;
 				task.delay(1, () => {
 					if (!this.isInHole) {
 						ballMechanics.isEnabled = true;
 						return;
 					}
-					this.holeSend.client.FireServer(Game.localPlayer, ballMechanics.counter);
+					rb.position = GameObject.Find("CharacterSpawner").transform.position;
 					ballMechanics.counter = 0;
 					ballMechanics.holeText.text = `${ballMechanics.counter < 10 ? "0" + ballMechanics.counter : ballMechanics.counter}`;
 				});
