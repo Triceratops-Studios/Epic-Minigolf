@@ -3,6 +3,7 @@ import Character from "@Easy/Core/Shared/Character/Character";
 import { ControlScheme, Mouse, Preferred, Touchscreen } from "@Easy/Core/Shared/UserInput";
 import { Game } from "@Easy/Core/Shared/Game";
 import { ActionInputType } from "@Easy/Core/Shared/Input/InputUtil";
+import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
 import ColorPallette from "Minigolf/Settings/ColorPallette";
 
@@ -21,6 +22,9 @@ export default class BallMechanics extends AirshipBehaviour {
 	private rotation: Vector3;
 	private lastVelocity: Vector3;
 
+	// Hole mechanics properties
+	private isInHole: boolean = false;
+
 	public isEnabled = false;
 	public counter = 0;
 	declare public strengthBar: GameObject;
@@ -29,6 +33,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	declare public holeText: TMP_Text;
 
 	private color = ColorPallette.random();
+
 	private updateLocation(object: GameObject, rotation: number | undefined) {
 		object.transform.position = this.position;
 		if (rotation && this.rb) {
@@ -46,6 +51,19 @@ export default class BallMechanics extends AirshipBehaviour {
 				}
 			}
 		}
+	}
+
+	// Hole mechanics methods
+	OnTriggerEnter(collider: Collider): void {
+		if (!Game.IsClient()) return;
+		if (!collider.CompareTag("Hole")) return;
+		this.isInHole = true;
+	}
+
+	protected OnTriggerExit(collider: Collider): void {
+		if (!Game.IsClient()) return;
+		if (!collider.CompareTag("Hole")) return;
+		this.isInHole = false;
 	}
 
 	override Start(): void {
@@ -77,7 +95,6 @@ export default class BallMechanics extends AirshipBehaviour {
 					speed.sqrMagnitude <= 0.1 &&
 					this.isEnabled
 				) {
-					print(this.isEnabled);
 					this.rb.linearVelocity = Vector3.zero;
 					this.oldPosition = this.position;
 
@@ -120,6 +137,7 @@ export default class BallMechanics extends AirshipBehaviour {
 		}
 		this.oldPosition = this.transform.position;
 	}
+
 	protected override Update(dt: number): void {
 		if (!Game.IsClient() || !this.rb) {
 			return;
@@ -176,6 +194,18 @@ export default class BallMechanics extends AirshipBehaviour {
 				this.rb.linearVelocity = Vector3.zero;
 				this.cooldown = false;
 				Destroy(this.pointer);
+
+				// Check if ball is in hole when it stops
+				if (this.isInHole) {
+					print("inHole");
+					this.isEnabled = false;
+					task.delay(0.5, () => {
+						this.rb.position = GameObject.Find("CharacterSpawner").transform.position;
+						this.counter = 0;
+						this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
+						this.isEnabled = true;
+					});
+				}
 			}
 			this.updating = false;
 		}
@@ -188,4 +218,3 @@ export default class BallMechanics extends AirshipBehaviour {
 		this.lastVelocity = this.rb.linearVelocity;
 	}
 }
-//aaaaa
