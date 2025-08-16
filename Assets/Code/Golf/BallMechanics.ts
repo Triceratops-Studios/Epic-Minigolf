@@ -200,9 +200,9 @@ export default class BallMechanics extends AirshipBehaviour {
 					print("inHole");
 					this.isEnabled = false;
 					task.delay(0.5, () => {
-						this.rb.position = GameObject.Find("CharacterSpawner").transform.position;
 						this.counter = 0;
 						this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
+						Airship.Damage.InflictDamage(this.gameObject, 1000, undefined);
 						this.isEnabled = true;
 					});
 				}
