@@ -5,7 +5,9 @@ import { Game } from "@Easy/Core/Shared/Game";
 import { ActionInputType } from "@Easy/Core/Shared/Input/InputUtil";
 import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
+import Events from "Code/Events";
 import ColorPallette from "Minigolf/Settings/ColorPallette";
+import RoundSystem from "./RoundSystem";
 
 export default class BallMechanics extends AirshipBehaviour {
 	private strength = 0;
@@ -31,6 +33,7 @@ export default class BallMechanics extends AirshipBehaviour {
 	declare public shootingIndicator: GameObject;
 	declare public baseStrength: number;
 	declare public holeText: TMP_Text;
+	declare public scoreText: TMP_Text;
 
 	private color = ColorPallette.random();
 
@@ -80,11 +83,20 @@ export default class BallMechanics extends AirshipBehaviour {
 			if (tmpText) {
 				this.holeText = tmpText.GetComponent<TMP_Text>()!;
 			}
+			const scoreText = GameObject.Find("Score");
+			if (scoreText) {
+				this.scoreText = scoreText.GetComponent<TMP_Text>()!;
+				this.scoreText.color = new Color(1, 1, 1, 0);
+			}
+			
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
 			Mouse.onLeftDown.Connect(() => {
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
+				if (!this.rb) {
+					Destroy(this)
+				}
 				const speed = this.rb.linearVelocity;
 				if (
 					Mouse.isLeftDown &&
@@ -99,9 +111,11 @@ export default class BallMechanics extends AirshipBehaviour {
 					this.oldPosition = this.position;
 
 					this.instance = Instantiate(this.strengthBar);
+					this.instance.transform.parent = this.gameObject.transform;
 					this.updateLocation(this.instance, undefined);
 
 					this.pointer = Instantiate(this.shootingIndicator);
+					this.pointer.transform.parent = this.gameObject.transform;
 					this.updateLocation(this.pointer, 1);
 
 					const graphics = this.pointer.GetComponentsInChildren<Image>(true);
@@ -200,10 +214,34 @@ export default class BallMechanics extends AirshipBehaviour {
 					print("inHole");
 					this.isEnabled = false;
 					task.delay(0.5, () => {
-						this.counter = 0;
-						this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
-						Airship.Damage.InflictDamage(this.gameObject, 1000, undefined);
-						this.isEnabled = true;
+						if (this.isInHole) {
+							Events.inHole.Fire(Game.localPlayer, this.counter);
+							this.counter = 0;
+							this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
+							this.isEnabled = true;
+
+							task.wait(1);
+
+							const scores = RoundSystem.scores[Game.localPlayer.username];
+							if (this.scoreText && scores) {
+								const displayTime = 1.2;
+								const score = RoundSystem.getScore(Game.localPlayer);
+
+								if (!score || score === 0) {
+									this.scoreText.text = '0';
+								}
+								
+								this.scoreText.color = new Color(0, 0, 0, 1);
+								let pastScore = tonumber(this.scoreText.text) || 0;
+								task.spawn(() => {
+									for (let i = pastScore; i < score || 0; i++) {
+										this.scoreText.text = `${i}`;
+										task.wait(displayTime / (score - pastScore));
+									}
+									this.scoreText.text = `${score}`;
+								});
+							}
+						}
 					});
 				}
 			}

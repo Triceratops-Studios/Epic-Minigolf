@@ -6,6 +6,7 @@ import { Team } from "@Easy/Core/Shared/Team/Team";
 import TrackSpawner from "./TrackSpawner";
 import ColorPallette from "Minigolf/Settings/ColorPallette";
 import BallMechanics from "./BallMechanics";
+import Events from "Code/Events";
 import MobileChatToggleButton from "@Easy/Core/Shared/MainMenu/Components/MobileChatToggleButton";
 
 export default class RoundSystem extends AirshipBehaviour {
@@ -14,12 +15,12 @@ export default class RoundSystem extends AirshipBehaviour {
 	public static scores: { [name: string]: {[round: number]: number} } = {};
 
 	private intermission = 15;
-	private rounds = 5;
+	private static rounds = 5;
 	private wait = 0;
 	private requiredPlayers = 1;
-	private static timer = 30;
-	private static timeLeft = 30;
-	private static currentRound = 0;
+	private timer = 30;
+	private timeLeft = 30;
+	private currentRound = 0;
 
 	private static team: Team;
 	private updating = false;
@@ -27,6 +28,19 @@ export default class RoundSystem extends AirshipBehaviour {
 
 	private tracks = new Array<GameObject>();
 	private static currentTrack: GameObject | undefined;
+
+	public static getScore(player: Player): number {
+		let score = 0;
+		if (RoundSystem.scores[player.username]) {
+			for (let round = 1; round <= RoundSystem.rounds; round++) {
+				if (!RoundSystem.scores[player.username][round]) {
+					continue;
+				}
+				score += RoundSystem.scores[player.username][round];
+			}
+		}
+		return score
+	}
 
 	public static JoinRound(player: Player): void {
 		if (RoundSystem.status === "none") {
@@ -38,30 +52,22 @@ export default class RoundSystem extends AirshipBehaviour {
 		}
 	}
 
-	public static reportScore(player: Player, hits: number): void {
-		if (player.character) {
-			Airship.Damage.InflictDamage(player.character.gameObject, 1000, undefined, {});
-		}
-		if (this.team.HasPlayer(player)) {
-			const score = math.round(this.timeLeft * 7 / hits * (1 + 0.2 * (TrackSpawner.getTrackInfo(this.currentTrack || -1)?.difficulty || 1)));
-			if (!this.scores[player.username]) {
-				this.scores[player.username] = {};
-			}
-			this.scores[player.username][this.currentRound] = score || 0;
-		}
-	}
-
 	protected override Start(): void {
-		if (!Game.IsClient()) { return; }
-		// const playButton = GameObject.Find("PlayButton");
-		// if (playButton) {
-		// 	const button = playButton.GetComponent<Button>()!;
-		// 	if (button) {
-		// 		button.onClick.Connect(() => {
-		// 			RoundSystem.JoinRound(Game.localPlayer);
-		// 		});
-		// 	}
-		// }
+		if (!Game.IsServer()) { return; }
+		Events.inHole.Connect((player, hits) => {
+			const character = GameObject.Find(`Character_${Game.localPlayer.username}`)
+			if (character) {
+				Airship.Damage.InflictDamage(character, 1000, undefined);
+				Destroy(character)
+			}
+			if (RoundSystem.team.HasPlayer(player)) {
+				const score = math.round(this.timeLeft * 7 / hits * (1 + 0.2 * (TrackSpawner.getTrackInfo(RoundSystem.currentTrack || -1)?.difficulty || 1)));
+				if (!RoundSystem.scores[player.username]) {
+					RoundSystem.scores[player.username] = {};
+				}
+				RoundSystem.scores[player.username][this.currentRound] = score || 0;
+			}
+		})
 	}
 
 	override Update(dt: number): void {
@@ -85,7 +91,7 @@ export default class RoundSystem extends AirshipBehaviour {
 			case "starting":
 				let gameTracks = TrackSpawner.getTracks();
 
-				for (let i = this.rounds; i > 0; i--) {
+				for (let i = RoundSystem.rounds; i > 0; i--) {
 					const index = math.random(1, gameTracks.size()) - 1;
 					this.tracks.push(gameTracks[index]);
 					gameTracks.remove(index);
@@ -100,11 +106,11 @@ export default class RoundSystem extends AirshipBehaviour {
 
 			case "setup":
 				
-				RoundSystem.currentRound += 1
+				this.currentRound += 1
 				const track = this.tracks.shift();
 				if (track) {
 					RoundSystem.status = "running";
-					RoundSystem.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
+					this.timer = ((TrackSpawner.getTrackInfo(track)?.difficulty || 1) -1) * 15 + 30;
 					RoundSystem.currentTrack = TrackSpawner.spawnTrack(track)
 					const spawn = GameObject.Find("CharacterSpawner");
 
@@ -114,7 +120,7 @@ export default class RoundSystem extends AirshipBehaviour {
 						if (!RoundSystem.scores[player.username]) {
 							RoundSystem.scores[player.username] = {};
 						}
-						RoundSystem.scores[player.username][RoundSystem.currentRound] = 0;
+						RoundSystem.scores[player.username][this.currentRound] = 0;
 						
 						player.SpawnCharacter(spawn.transform.position, {
 							lookDirection: spawn.transform.forward,
@@ -126,7 +132,7 @@ export default class RoundSystem extends AirshipBehaviour {
 						})
 					}
 
-					Airship.Chat.BroadcastMessage(`Track #${RoundSystem.currentRound}`);
+					Airship.Chat.BroadcastMessage(`Track #${this.currentRound}`);
 					task.wait(3)
 					Airship.Chat.BroadcastMessage("GO!");
 				}
@@ -135,8 +141,8 @@ export default class RoundSystem extends AirshipBehaviour {
 			case "running":
 				RoundSystem.status = "cleanup";
 				const timerText = GameObject.Find("TimerText")?.GetComponent<TMP_Text>();
-				for (let i = RoundSystem.timer; i >= 0; i--) {
-					RoundSystem.timeLeft = i;
+				for (let i = this.timer; i >= 0; i--) {
+					this.timeLeft = i;
 					const min = math.floor(i / 60);
 					const sec = i % 60
 
@@ -154,20 +160,21 @@ export default class RoundSystem extends AirshipBehaviour {
 					if (Airship.Teams.FindByPlayer(player) !== RoundSystem.team) { continue; }
 					const object = GameObject.Find(`Character_${player.username}`)
 					if (object) {
-						Airship.Damage.InflictDamage(object, 1000, undefined, {});
+						Airship.Damage.InflictDamage(object, 1000, undefined);
+						Destroy(object)
 					}
 				}
 				if (RoundSystem.currentTrack) {
 					Destroy(RoundSystem.currentTrack);
 				}
-				if (RoundSystem.currentRound >= this.rounds) {
+				if (this.currentRound >= RoundSystem.rounds) {
 					this.wait = 10;
 					RoundSystem.status = "waiting";
 					Airship.Teams.RemoveTeam(RoundSystem.team);
 					RoundSystem.scores = {};
-					RoundSystem.currentRound = 0;
-					RoundSystem.timer = 30;
-					RoundSystem.timeLeft = 30;
+					this.currentRound = 0;
+					this.timer = 30;
+					this.timeLeft = 30;
 					break;
 				} else {
 					this.pending = "setup";
@@ -182,7 +189,7 @@ export default class RoundSystem extends AirshipBehaviour {
 					task.wait(1);
 				}
 				this.wait = 0;
-				if (Airship.Players.GetPlayers().size() < this.requiredPlayers && RoundSystem.currentRound === 0) {;
+				if (Airship.Players.GetPlayers().size() < this.requiredPlayers && this.currentRound === 0) {;
 					this.wait = 1;
 				} else {
 					RoundSystem.status = this.pending || "intermission";
