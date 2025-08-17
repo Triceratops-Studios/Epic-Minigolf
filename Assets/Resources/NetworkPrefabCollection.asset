@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkPrefabs:
   - {fileID: 8421102427360197587, guid: 3ffb4c78387652a4fa521f3b09a03ae9, type: 3}
-  - {fileID: -7200657711383282750, guid: 81c1f261cea7fae4a944a288102fabbf, type: 3}
+  - {fileID: 1867115529158925192, guid: 5cde8ab458280c3418857ad2883e42f0, type: 3}
+  - {fileID: 1867115529158925192, guid: 455eca497338b984ab4751211bcd6129, type: 3}
+  - {fileID: 1867115529158925192, guid: 20c4afabeddb1524b857b3e3e0d5f273, type: 3}
+  - {fileID: 1867115529158925192, guid: b9f38156ddc4f8c498de127bdae3aa51, type: 3}
+  - {fileID: 1867115529158925192, guid: 65b2e83ae28cfb9478a721bd8158c264, type: 3}

@@ -24,6 +24,7 @@ export default class TrackSpawner extends AirshipBehaviour {
 
 		const info = track.GetAirshipComponent<TrackComponent>();
 		if (!info) {return}
+		print(info.difficulty, info.name);
 
 		return {
 			name: info.name,
@@ -38,6 +39,7 @@ export default class TrackSpawner extends AirshipBehaviour {
 
 		if (!track) {return}
 		track = Instantiate(track);
+		NetworkServer.Spawn(track);
 		return track;
 	}
 }

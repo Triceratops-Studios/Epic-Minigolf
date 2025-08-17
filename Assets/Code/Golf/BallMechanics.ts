@@ -71,6 +71,33 @@ export default class BallMechanics extends AirshipBehaviour {
 
 	override Start(): void {
 		if (Game.IsClient()) {
+
+			Events.updateTimer.client.OnServerEvent((time) => {
+				const timerText = GameObject.Find("TimerText")?.GetComponent<TMP_Text>();
+				if (!timerText) {
+					return;
+				}
+				timerText.text = time;
+			});
+
+			Events.reportScore.client.OnServerEvent((score) => {
+				print(score)
+
+				if (!score || score === 0) {
+					this.scoreText.text = '0';
+				}
+								
+				this.scoreText.color = new Color(0, 0, 0, 1);
+				let pastScore = tonumber(this.scoreText.text) || 0;
+				task.spawn(() => {
+					for (let i = pastScore; i < score || 0; i++) {
+						this.scoreText.text = `${i}`;
+						task.wait();
+					}
+					this.scoreText.text = `${score}`;
+				});
+			});
+
 			if (this.gameObject.name !== `Character_${Game.localPlayer.username}`) {
 				Destroy(this);
 			}
@@ -94,9 +121,6 @@ export default class BallMechanics extends AirshipBehaviour {
 			Mouse.onLeftDown.Connect(() => {
 				const screenPosition = Mouse.position;
 				task.wait(0.1);
-				if (!this.rb) {
-					Destroy(this)
-				}
 				const speed = this.rb.linearVelocity;
 				if (
 					Mouse.isLeftDown &&
@@ -105,7 +129,8 @@ export default class BallMechanics extends AirshipBehaviour {
 					!this.cooldown &&
 					speed &&
 					speed.sqrMagnitude <= 0.1 &&
-					this.isEnabled
+					this.isEnabled &&
+					this.rb
 				) {
 					this.rb.linearVelocity = Vector3.zero;
 					this.oldPosition = this.position;
@@ -215,32 +240,10 @@ export default class BallMechanics extends AirshipBehaviour {
 					this.isEnabled = false;
 					task.delay(0.5, () => {
 						if (this.isInHole) {
-							Events.inHole.Fire(Game.localPlayer, this.counter);
+							Events.inHole.client.FireServer(this.counter);
 							this.counter = 0;
 							this.holeText.text = `${this.counter < 10 ? "0" + this.counter : this.counter}`;
 							this.isEnabled = true;
-
-							task.wait(1);
-
-							const scores = RoundSystem.scores[Game.localPlayer.username];
-							if (this.scoreText && scores) {
-								const displayTime = 1.2;
-								const score = RoundSystem.getScore(Game.localPlayer);
-
-								if (!score || score === 0) {
-									this.scoreText.text = '0';
-								}
-								
-								this.scoreText.color = new Color(0, 0, 0, 1);
-								let pastScore = tonumber(this.scoreText.text) || 0;
-								task.spawn(() => {
-									for (let i = pastScore; i < score || 0; i++) {
-										this.scoreText.text = `${i}`;
-										task.wait(displayTime / (score - pastScore));
-									}
-									this.scoreText.text = `${score}`;
-								});
-							}
 						}
 					});
 				}

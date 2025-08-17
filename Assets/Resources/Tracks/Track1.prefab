@@ -276,6 +276,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4730728923646314076}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8555465101453202197}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c279df25501755540b53d47834227d7b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -9177565617393318818}
   m_SourcePrefab: {fileID: 100100000, guid: c279df25501755540b53d47834227d7b, type: 3}
 --- !u!4 &1342779687626228018 stripped
 Transform:
@@ -323,7 +329,7 @@ MonoBehaviour:
         tags: []
       decorators: []
       nullable: 0
-      serializedValue: 1
+      serializedValue: 2
       serializedObject: {fileID: 0}
       modified: 1
     - name: trackName
@@ -341,11 +347,62 @@ MonoBehaviour:
         tags: []
       decorators: []
       nullable: 0
-      serializedValue: Cool Name
+      serializedValue: Test Track
       serializedObject: {fileID: 0}
       modified: 1
     displayIcon: {fileID: 0}
     displayName: 
+--- !u!114 &8555465101453202197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867115529158925192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1926392076
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &-9177565617393318818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867115529158925192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 1342779687626228018}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!1001 &2985121781149043692
 PrefabInstance:
   m_ObjectHideFlags: 0
