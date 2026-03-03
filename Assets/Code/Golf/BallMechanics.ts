@@ -1,13 +1,9 @@
 import { Airship } from "@Easy/Core/Shared/Airship";
-import Character from "@Easy/Core/Shared/Character/Character";
-import { ControlScheme, Mouse, Preferred, Touchscreen } from "@Easy/Core/Shared/UserInput";
+import { Mouse } from "@Easy/Core/Shared/UserInput";
 import { Game } from "@Easy/Core/Shared/Game";
-import { ActionInputType } from "@Easy/Core/Shared/Input/InputUtil";
-import { NetworkSignal } from "@Easy/Core/Shared/Network/NetworkSignal";
 
 import Events from "Code/Events";
 import ColorPallette from "Minigolf/Settings/ColorPallette";
-import RoundSystem from "./RoundSystem";
 
 export default class BallMechanics extends AirshipBehaviour {
 	private strength = 0;
@@ -71,7 +67,6 @@ export default class BallMechanics extends AirshipBehaviour {
 
 	override Start(): void {
 		if (Game.IsClient()) {
-
 			Events.updateTimer.client.OnServerEvent((time) => {
 				const timerText = GameObject.Find("TimerText")?.GetComponent<TMP_Text>();
 				if (!timerText) {
@@ -81,12 +76,12 @@ export default class BallMechanics extends AirshipBehaviour {
 			});
 
 			Events.reportScore.client.OnServerEvent((score) => {
-				print(score)
+				print(score);
 
 				if (!score || score === 0) {
-					this.scoreText.text = '0';
+					this.scoreText.text = "0";
 				}
-								
+
 				this.scoreText.color = new Color(0, 0, 0, 1);
 				let pastScore = tonumber(this.scoreText.text) || 0;
 				task.spawn(() => {
@@ -115,7 +110,7 @@ export default class BallMechanics extends AirshipBehaviour {
 				this.scoreText = scoreText.GetComponent<TMP_Text>()!;
 				this.scoreText.color = new Color(1, 1, 1, 0);
 			}
-			
+
 			this.camera = Airship.Camera.cameraRig?.mainCamera;
 
 			Mouse.onLeftDown.Connect(() => {
